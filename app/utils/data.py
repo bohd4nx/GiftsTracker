@@ -10,7 +10,7 @@ def format_number(number: int) -> str:
 def serialize_json(data: dict | None) -> str | None:
     if not data:
         return None
-    
+
     def convert_bytes(obj):
         if isinstance(obj, dict):
             return {k: convert_bytes(v) for k, v in obj.items()}
@@ -19,16 +19,16 @@ def serialize_json(data: dict | None) -> str | None:
         elif isinstance(obj, bytes):
             return repr(obj)
         return obj
-    
+
     return json.dumps(convert_bytes(data), ensure_ascii=False)
 
 
 def deserialize_json(data_str: str | None) -> dict:
     if not data_str:
         return {}
-    
+
     parsed = json.loads(data_str)
-    
+
     def restore_bytes(obj):
         if isinstance(obj, dict):
             return {k: restore_bytes(v) for k, v in obj.items()}
@@ -40,5 +40,5 @@ def deserialize_json(data_str: str | None) -> dict:
             except:
                 return obj
         return obj
-    
+
     return restore_bytes(parsed)

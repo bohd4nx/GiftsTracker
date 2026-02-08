@@ -4,8 +4,8 @@ import logging
 from pyrogram.errors import FloodWait, WebpageNotFound
 
 from app.core import config
-from app.utils import get_released_peer, create_link_preview
 from app.notifications.messages import create_message_text
+from app.utils import get_released_peer, create_link_preview
 
 logger = logging.getLogger(__name__)
 
