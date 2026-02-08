@@ -5,7 +5,7 @@ from pyrogram import Client
 
 from app.methods import fetch_gifts, upload_sticker
 from app.notifications import send_notification, notify_upgrade_available, notify_upgrade_changed
-from app.utils.history import (
+from app.utils import (
     preserve_message_ids,
     detect_upgrade_availability,
     detect_upgrade_price_change

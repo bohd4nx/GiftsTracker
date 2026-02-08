@@ -1,6 +1,9 @@
 https://github.com/TelegramPlayground/pyrogram/archive/dev.zip
 # https://github.com/KurimuzonAkuma/kurigram/archive/dev.zip
 tgcrypto-pyrofork==1.2.8
-python-dotenv==1.2.1
 asyncio==4.0.0
 aiogram==3.24.0
+python-dotenv==1.2.1
+SQLAlchemy==2.0.46
+greenlet==3.3.1
+aiosqlite==0.22.1

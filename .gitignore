@@ -4,6 +4,11 @@ __pycache__/
 *$py.class
 *.so
 .Python
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Build & Distribution
 build/
 develop-eggs/
 dist/
@@ -16,41 +21,47 @@ parts/
 sdist/
 var/
 wheels/
-*.egg-info/
-.installed.cfg
-*.egg
 
 # Virtual Environment
 venv/
 .venv/
 env/
+ENV/
 
-# Database
+# Database & Session
 *.db
 *.db-*
 *.sqlite
 *.sqlite3
 *.session
 *.session-*
+Gifts.db
 
-# Environment variables
+# Configuration
 .env
 .env.local
 config.ini
 
-# IDE
+# IDE & Editors
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.DS_Store
 
 # Logs
-/logs
+logs/
 *.log
+client.log
 
-# OS
-.DS_Store
+# Temp & Cache
+*.tmp
+*.cache
 Thumbs.db
 unknown_errors.txt
+
+# Project Specific
 history.json
+history.json.backup
+migrate_json_to_db.py

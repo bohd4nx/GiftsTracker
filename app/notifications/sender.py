@@ -36,10 +36,8 @@ async def send_notification(
         is_upgrade: bool = False
 ) -> int | None:
     try:
-        username, link_preview = await asyncio.gather(
-            get_released_peer(app, gift_data),
-            create_link_preview(app, gift_data, sticker_message_id)
-        )
+        username = await get_released_peer(app, gift_data)
+        link_preview = create_link_preview(gift_data, sticker_message_id)
         text = create_message_text(gift_data, username, is_upgrade)
 
         try:
@@ -67,10 +65,8 @@ async def edit_notification(
         is_upgrade: bool = False
 ) -> bool:
     try:
-        username, link_preview = await asyncio.gather(
-            get_released_peer(app, gift_data),
-            create_link_preview(app, gift_data, sticker_message_id)
-        )
+        username = await get_released_peer(app, gift_data)
+        link_preview = create_link_preview(gift_data, sticker_message_id)
         text = create_message_text(gift_data, username, is_upgrade)
 
         try:

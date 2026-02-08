@@ -9,12 +9,16 @@ from pyrogram.errors import AuthKeyUnregistered, AuthKeyDuplicated, SessionRevok
 from pyrogram.types import LinkPreviewOptions
 
 from app.core import config, logger, setup_logging
+from app.database import init_db, close_db
 from app.services import run_gift_monitor
 
 
 class App:
     @staticmethod
     async def run() -> None:
+        await init_db()
+        logger.info("Database initialized")
+        
         client = Client(
             name="GiftsTracker",
             api_id=config.API_ID,
@@ -53,6 +57,8 @@ class App:
                 await run_gift_monitor(app, bot)
             finally:
                 await bot.session.close()
+                await close_db()
+                logger.info("Database connection closed")
 
 
 if __name__ == "__main__":
