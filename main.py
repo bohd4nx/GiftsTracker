@@ -53,8 +53,6 @@ async def main() -> None:
     for router in [start_router]:
         dp.include_router(router)
 
-    logger.info("Routers registered")
-
     async with client as app:
         me = await app.get_me()
         logger.info(f"Logged in as @{me.username or ''} [{me.id}]")
