@@ -30,8 +30,11 @@ class App:
             client_platform=enums.ClientPlatform.DESKTOP,
             parse_mode=enums.ParseMode.HTML,
             link_preview_options=LinkPreviewOptions(is_disabled=True),
+            skip_updates=True,
+            workers=8,
             sleep_threshold=30,
-            max_concurrent_transmissions=10
+            max_concurrent_transmissions=10,
+            no_joined_notifications=True,
         )
 
         bot = Bot(

@@ -1,6 +1,6 @@
 import logging
 
-from .sender import send_notification, edit_notification
+from app.notifications.sender import send_notification, edit_notification
 
 logger = logging.getLogger(__name__)
 

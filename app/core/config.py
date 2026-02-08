@@ -1,34 +1,35 @@
 import logging
+import os
 import sys
-from configparser import ConfigParser
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
 
 class Config:
     def __init__(self) -> None:
-        config_path = Path(__file__).resolve().parents[2] / "config.ini"
+        env_path = Path(__file__).resolve().parents[2] / ".env"
 
-        if not config_path.exists():
-            logger.error("Configuration file not found! Please create 'config.ini'")
+        if not env_path.exists():
+            logger.error("Configuration file not found! Please create '.env'")
             sys.exit(1)
 
-        parser = ConfigParser()
-        parser.read(config_path, encoding="utf-8")
+        load_dotenv(env_path)
 
-        self.API_ID: int = parser.getint("Telegram", "API_ID")
-        self.API_HASH: str = parser.get("Telegram", "API_HASH")
-        self.PHONE_NUMBER: str = parser.get("Telegram", "PHONE_NUMBER")
-        self.PASSWORD: str | None = parser.get("Telegram", "PASSWORD", fallback=None) or None
+        self.API_ID: int = int(os.getenv("API_ID", "0"))
+        self.API_HASH: str = os.getenv("API_HASH", "")
+        self.PHONE_NUMBER: str = os.getenv("PHONE_NUMBER", "")
+        self.PASSWORD: str | None = os.getenv("PASSWORD") or None
 
-        self.BOT_TOKEN: str = parser.get("Telegram", "BOT_TOKEN")
+        self.BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
 
-        self.CHANNEL_ID: int = parser.getint("Channels", "CHANNEL_ID")
-        self.STICKERS_CHANNEL_ID: int = parser.getint("Channels", "STICKERS_CHANNEL_ID")
-        self.STICKERS_CHANNEL_USERNAME: str = parser.get("Channels", "STICKERS_CHANNEL_USERNAME")
+        self.CHANNEL_ID: int = int(os.getenv("CHANNEL_ID", "0"))
+        self.STICKERS_CHANNEL_ID: int = int(os.getenv("STICKERS_CHANNEL_ID", "0"))
+        self.STICKERS_CHANNEL_USERNAME: str = os.getenv("STICKERS_CHANNEL_USERNAME", "")
 
-        self.INTERVAL: float = parser.getfloat("Tracker", "INTERVAL", fallback=15.0)
+        self.INTERVAL: float = float(os.getenv("INTERVAL", "15.0"))
 
 
 config = Config()
