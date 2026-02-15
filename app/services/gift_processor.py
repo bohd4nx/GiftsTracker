@@ -53,7 +53,7 @@ async def _process_new_gifts(app: Client, bot, new_gifts: dict[int, dict], gifts
             if not sticker_msg_id:
                 raise Exception(f"Failed to upload sticker for gift {gift['id']}")
 
-            msg_id = await send_notification(app, bot, gift, sticker_msg_id, is_upgrade=False)
+            msg_id = await send_notification(app, gift, sticker_msg_id, is_upgrade=False)
             gift.update({"sticker_msg_id": sticker_msg_id, "msg_id": msg_id, "upgrade_msg_id": None})
             logger.info(f"Successfully processed gift {gift['id']}")
         except Exception as e:
@@ -68,11 +68,11 @@ async def _process_new_gifts(app: Client, bot, new_gifts: dict[int, dict], gifts
 
 async def _check_gift_changes(app: Client, bot, old_gift: dict, new_gift: dict) -> bool:
     if detect_upgrade_availability(old_gift, new_gift):
-        await notify_upgrade_available(app, bot, new_gift)
+        await notify_upgrade_available(app, new_gift)
         return True
 
     if detect_upgrade_price_change(old_gift, new_gift):
-        await notify_upgrade_changed(app, bot, new_gift, old_gift)
+        await notify_upgrade_changed(app, new_gift, old_gift)
         return True
 
     return False

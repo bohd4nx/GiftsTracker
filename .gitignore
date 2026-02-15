@@ -35,7 +35,6 @@ ENV/
 *.sqlite3
 *.session
 *.session-*
-Gifts.db
 
 # Configuration
 .env
@@ -65,3 +64,4 @@ unknown_errors.txt
 history.json
 history.json.backup
 migrate_json_to_db.py
+update_messages.py

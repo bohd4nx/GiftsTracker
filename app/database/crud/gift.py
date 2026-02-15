@@ -23,7 +23,6 @@ class GiftCRUD:
         existing = await GiftCRUD.get_by_id(session, gift_data["id"])
 
         if existing:
-            await GiftCRUD._track_changes(session, existing, gift_data)
             GiftCRUD._update_gift_fields(existing, gift_data)
             gift = existing
         else:

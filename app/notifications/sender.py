@@ -30,7 +30,6 @@ async def _send_or_edit(app, text: str, link_preview, message_id: int | None = N
 
 async def send_notification(
         app,
-        bot,
         gift_data: dict,
         sticker_message_id: int,
         is_upgrade: bool = False
@@ -50,7 +49,7 @@ async def send_notification(
     except FloodWait as e:
         logger.warning(f"Flood wait triggered, sleeping for {e.value}s on gift {gift_data['id']}")
         await asyncio.sleep(e.value)
-        return await send_notification(app, bot, gift_data, sticker_message_id, is_upgrade)
+        return await send_notification(app, gift_data, sticker_message_id, is_upgrade)
     except Exception as e:
         logger.exception(f"Failed to send notification for gift {gift_data['id']}: {e}")
         return None
@@ -58,7 +57,6 @@ async def send_notification(
 
 async def edit_notification(
         app,
-        bot,
         message_id: int,
         gift_data: dict,
         sticker_message_id: int,
@@ -79,7 +77,7 @@ async def edit_notification(
     except FloodWait as e:
         logger.warning(f"Flood wait triggered, sleeping for {e.value}s while editing gift {gift_data['id']}")
         await asyncio.sleep(e.value)
-        return await edit_notification(app, bot, message_id, gift_data, sticker_message_id, is_upgrade)
+        return await edit_notification(app, message_id, gift_data, sticker_message_id, is_upgrade)
     except Exception as e:
         if "MESSAGE_NOT_MODIFIED" not in str(e):
             logger.exception(f"Failed to edit notification for gift {gift_data['id']}: {e}")

@@ -1,14 +1,13 @@
 import asyncio
 from pathlib import Path
 
-from aiogram import Bot, Dispatcher
+from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from pyrogram import Client, enums
 from pyrogram.errors import AuthKeyUnregistered, AuthKeyDuplicated, SessionRevoked
 from pyrogram.types import LinkPreviewOptions
 
-from app.commands import start_router
 from app.core import config, logger, setup_logging
 from app.database import init_db, close_db
 from app.services import run_gift_monitor
@@ -32,13 +31,13 @@ async def main() -> None:
         lang_code="en",
         workdir=str(Path(__file__).parent),
         client_platform=enums.ClientPlatform.DESKTOP,
+        plugins=dict(root="app.commands"),
         parse_mode=enums.ParseMode.HTML,
         link_preview_options=LinkPreviewOptions(is_disabled=True),
         skip_updates=True,
         workers=8,
         sleep_threshold=30,
-        max_concurrent_transmissions=10,
-        no_joined_notifications=True,
+        max_concurrent_transmissions=10
     )
 
     bot = Bot(
@@ -49,24 +48,12 @@ async def main() -> None:
         )
     )
 
-    dp = Dispatcher()
-    for router in [start_router]:
-        dp.include_router(router)
-
     async with client as app:
         me = await app.get_me()
         logger.info(f"Logged in as @{me.username or ''} [{me.id}]")
 
         try:
-            await asyncio.gather(
-                run_gift_monitor(app, bot),
-                dp.start_polling(
-                    bot,
-                    polling_timeout=30,
-                    handle_as_tasks=True,
-                    close_bot_session=True,
-                )
-            )
+            await run_gift_monitor(app, bot)
         finally:
             await bot.session.close()
             await close_db()
