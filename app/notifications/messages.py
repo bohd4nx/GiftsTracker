@@ -1,15 +1,15 @@
 from app.utils import format_number
 
 EMOJIS = {
-    'party': '<emoji id="5411480216809792207">🎁</emoji>',
-    'released': '<emoji id="5409129417999936997">✅</emoji>',
+    'title_new_gift': '<emoji id="5411480216809792207">🎁</emoji>',
+    'released_by': '<emoji id="5409129417999936997">✅</emoji>',
     'price': '<emoji id="5409181322679706928">ℹ️</emoji>',
-    'star': '<emoji id="5472092560522511055">⭐️</emoji>',
-    'rounds': '<emoji id="5411180428092533606">🔨</emoji>',
-    'premium': '<emoji id="5409044699770026104">🔒</emoji>',
-    'upgrade': '<emoji id="5409128576186347318">⬆️</emoji>',
-    'settings': '<emoji id="5409102321051266958">⚙️</emoji>',
-    'search': '<emoji id="5424894868554018540">🔎</emoji>',
+    'stars': '<emoji id="5472092560522511055">⭐️</emoji>',
+    'auction_rounds': '<emoji id="5411180428092533606">🔨</emoji>',
+    'restrictions': '<emoji id="5409044699770026104">🔒</emoji>',
+    'upgrade_price': '<emoji id="5409128576186347318">⬆️</emoji>',
+    'gift_id': '<emoji id="5409102321051266958">⚙️</emoji>',
+    'title_upgrade': '<emoji id="5424894868554018540">🔎</emoji>',
 }
 
 FOOTER = (
@@ -30,25 +30,25 @@ def create_message_text(
     gift_id = gift_data.get("id")
 
     title = "Gift upgrade available" if is_upgrade else "New gift available"
-    title_emoji = EMOJIS["search"] if is_upgrade else EMOJIS["party"]
+    title_emoji = EMOJIS["title_upgrade"] if is_upgrade else EMOJIS["title_new_gift"]
 
     lines = [f"{title_emoji} <b>{title}</b>\n"]
-    lines.append(f"{EMOJIS['settings']} <b>ID:</b> <code>{gift_id}</code>")
+    lines.append(f"{EMOJIS['gift_id']} <b>ID:</b> <code>{gift_id}</code>")
 
     if username:
-        lines.append(f"{EMOJIS['released']} <b>Released by:</b> @{username}")
+        lines.append(f"{EMOJIS['released_by']} <b>Released by:</b> @{username}")
 
     if is_upgrade:
         upgrade_price = format_number(gift_data.get("upgrade_price"))
         lines.append(
-            f"{EMOJIS['upgrade']} <b>Upgrade Price:</b> "
-            f"<code>{upgrade_price}</code> {EMOJIS['star']}"
+            f"{EMOJIS['upgrade_price']} <b>Upgrade Price:</b> "
+            f"<code>{upgrade_price}</code> {EMOJIS['stars']}"
         )
     else:
         price = format_number(gift_data["price"])
         price_line = (
             f"{EMOJIS['price']} <b>Price:</b> "
-            f"<code>{price}</code>{EMOJIS['star']}"
+            f"<code>{price}</code>{EMOJIS['stars']}"
         )
 
         if total_amount := gift_data.get("total_amount"):
@@ -59,7 +59,7 @@ def create_message_text(
         if raw_data.get("auction") and (gifts_per_round := raw_data.get("gifts_per_round")):
             rounds = (gift_data.get("total_amount") or 0) // gifts_per_round
             lines.append(
-                f"{EMOJIS['rounds']} <b>{rounds}</b> rounds • "
+                f"{EMOJIS['auction_rounds']} <b>{rounds}</b> rounds • "
                 f"<b>{gifts_per_round}</b> per round"
             )
 
@@ -73,6 +73,9 @@ def create_message_text(
 
         if limits:
             lines.append(f"{EMOJIS['premium']} {' • '.join(limits)}")
+
+        if raw_data.get("locked_until_date"):
+            lines.append(f"{EMOJIS['restrictions']} <b>Time Locked</b>")
 
     lines.append(f"\n{FOOTER}")
     return "\n".join(lines)

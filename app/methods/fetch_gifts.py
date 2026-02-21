@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 async def fetch_gifts(app: Client) -> tuple[int, dict[int, dict]]:
     try:
         star_gifts = await app.invoke(raw.functions.payments.GetStarGifts(hash=0))
-        # logger.debug(f"Full GetStarGifts response: {star_gifts}")
+        logger.debug(f"Full GetStarGifts response: {star_gifts}")
         hash_value = getattr(star_gifts, 'hash', 0)
 
         gifts_dict = {
@@ -68,8 +68,6 @@ def _extract_gift_data(gift) -> dict[str, Any]:
         "price": gift.stars,
         "upgrade_price": getattr(gift, 'upgrade_stars', None),
         "total_amount": getattr(gift, 'availability_total', None),
-        "is_limited": getattr(gift, 'limited', False),
-        "is_sold_out": getattr(gift, 'sold_out', False),
         "sticker_file_id": (sticker_data := _encode_sticker(getattr(gift, 'sticker', None), gift.id))[0],
         "sticker_raw": sticker_data[1],
         "sticker_msg_id": None,

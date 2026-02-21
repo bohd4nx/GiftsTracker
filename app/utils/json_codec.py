@@ -1,12 +1,6 @@
 import json
 
 
-def format_number(number: int) -> str:
-    if number >= 1000:
-        return "{:,}".format(number).replace(",", ".")
-    return str(number)
-
-
 def serialize_json(data: dict | None) -> str | None:
     if not data:
         return None

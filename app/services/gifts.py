@@ -4,11 +4,10 @@ import logging
 from pyrogram import Client
 
 from app.methods import fetch_gifts, upload_sticker
-from app.notifications import send_notification, notify_upgrade_available, notify_upgrade_changed
-from app.utils import (
+from app.notifications import send_notification
+from app.services.changes import (
     preserve_message_ids,
-    detect_upgrade_availability,
-    detect_upgrade_price_change
+    check_gift_changes
 )
 
 logger = logging.getLogger(__name__)
@@ -34,7 +33,7 @@ async def process_gifts(app: Client, bot, gifts_history: dict[int, dict]) -> boo
         old_gift = gifts_history[gift_id]
         preserve_message_ids(old_gift, current_gift)
 
-        if await _check_gift_changes(app, bot, old_gift, current_gift):
+        if await check_gift_changes(app, bot, old_gift, current_gift):
             has_changes = True
 
         gifts_history[gift_id] = current_gift
@@ -64,15 +63,3 @@ async def _process_new_gifts(app: Client, bot, new_gifts: dict[int, dict], gifts
 
         if idx < len(new_gifts_list):
             await asyncio.sleep(1)
-
-
-async def _check_gift_changes(app: Client, bot, old_gift: dict, new_gift: dict) -> bool:
-    if detect_upgrade_availability(old_gift, new_gift):
-        await notify_upgrade_available(app, new_gift)
-        return True
-
-    if detect_upgrade_price_change(old_gift, new_gift):
-        await notify_upgrade_changed(app, new_gift, old_gift)
-        return True
-
-    return False

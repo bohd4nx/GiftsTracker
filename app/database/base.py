@@ -19,7 +19,7 @@ class Base(DeclarativeBase):
 
 
 async def init_db() -> None:
-    async with engine.begin() as conn:
+    async with engine.begin() as conn:  # type: ignore [sqlalchemy.ext.asyncio.AsyncConnection]
         await conn.execute(text("PRAGMA journal_mode=WAL"))
         await conn.execute(text("PRAGMA busy_timeout=60000"))
         await conn.execute(text("PRAGMA synchronous=NORMAL"))

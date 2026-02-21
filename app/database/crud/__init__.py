@@ -1,3 +1,3 @@
-from .gift import GiftCRUD
+from .gifts import GiftsCRUD
 
-__all__ = ["GiftCRUD"]
+__all__ = ["GiftsCRUD"]

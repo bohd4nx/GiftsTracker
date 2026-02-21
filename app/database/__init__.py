@@ -1,4 +1,4 @@
 from .base import init_db, close_db, SessionLocal
-from .models import Gift
+from .models import Gifts
 
-__all__ = ["Gift", "init_db", "close_db", "SessionLocal"]
+__all__ = ["Gifts", "init_db", "close_db", "SessionLocal"]
