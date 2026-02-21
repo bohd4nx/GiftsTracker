@@ -1,4 +1,5 @@
 import asyncio
+import sqlite3
 from pathlib import Path
 
 from aiogram import Bot
@@ -65,6 +66,11 @@ if __name__ == "__main__":
         asyncio.run(main())
     except (AuthKeyUnregistered, AuthKeyDuplicated, SessionRevoked):
         logger.error("Authorization error: Session expired or invalid. Please re-authenticate.")
+    except sqlite3.OperationalError as ex:
+        if "database is locked" in str(ex).lower():
+            logger.error("Authorization error: Session expired or invalid. Please re-authenticate.")
+        else:
+            logger.exception(f"Unexpected session error: {ex}")
     except (KeyboardInterrupt, SystemExit):
         logger.info("Program successfully terminated")
     except Exception as ex:

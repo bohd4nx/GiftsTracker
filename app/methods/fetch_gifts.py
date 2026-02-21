@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 async def fetch_gifts(app: Client) -> tuple[int, dict[int, dict]]:
     try:
         star_gifts = await app.invoke(raw.functions.payments.GetStarGifts(hash=0))
-        logger.debug(f"Full GetStarGifts response: {star_gifts}")
+        # logger.debug(f"Full GetStarGifts response: {star_gifts}")
         hash_value = getattr(star_gifts, 'hash', 0)
 
         gifts_dict = {

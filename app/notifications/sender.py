@@ -4,7 +4,8 @@ import logging
 from pyrogram.errors import FloodWait, WebpageNotFound
 
 from app.core import config
-from app.notifications.messages import create_message_text
+from app.notifications.gifts import create_gift_message_text
+from app.notifications.upgrades import create_upgrade_message_text
 from app.utils import get_released_peer, create_link_preview
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,8 @@ async def send_notification(
     try:
         username = await get_released_peer(app, gift_data)
         link_preview = create_link_preview(gift_data, sticker_message_id)
-        text = create_message_text(gift_data, username, is_upgrade)
+        text = create_upgrade_message_text(gift_data, username) if is_upgrade else create_gift_message_text(gift_data,
+                                                                                                            username)
 
         try:
             msg_id = await _send_or_edit(app, text, link_preview)
@@ -65,7 +67,8 @@ async def edit_notification(
     try:
         username = await get_released_peer(app, gift_data)
         link_preview = create_link_preview(gift_data, sticker_message_id)
-        text = create_message_text(gift_data, username, is_upgrade)
+        text = create_upgrade_message_text(gift_data, username) if is_upgrade else create_gift_message_text(gift_data,
+                                                                                                            username)
 
         try:
             await _send_or_edit(app, text, link_preview, message_id)
