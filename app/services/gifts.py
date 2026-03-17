@@ -10,15 +10,20 @@ from app.services.changes import preserve_message_ids, check_gift_changes
 logger = logging.getLogger(__name__)
 
 
-async def process_gifts(app: Client, bot, gifts_history: dict[int, dict]) -> bool:
+async def process_gifts(
+    app: Client, bot, gifts_history: dict[int, dict], last_hash: int = 0
+) -> tuple[bool, int]:
     """
     Compares current Telegram gift list against the local history.
     Processes new gifts (uploads sticker, sends notification) and checks
-    existing ones for upgrade/price changes. Returns True if anything changed.
+    existing ones for upgrade/price changes.
+
+    Returns (has_changes, new_hash). new_hash should be passed on the next call
+    so Telegram can short-circuit with StarGiftsNotModified when nothing changed.
     """
-    _, current_gifts = await fetch_gifts(app)
-    if not current_gifts:
-        return False
+    new_hash, current_gifts = await fetch_gifts(app, last_hash)
+    if current_gifts is None:
+        return False, new_hash
 
     has_changes = False
     new_gifts = {k: v for k, v in current_gifts.items() if k not in gifts_history}
@@ -40,7 +45,7 @@ async def process_gifts(app: Client, bot, gifts_history: dict[int, dict]) -> boo
 
         gifts_history[gift_id] = current_gift
 
-    return has_changes
+    return has_changes, new_hash
 
 
 async def _process_new_gifts(

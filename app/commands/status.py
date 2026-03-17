@@ -15,8 +15,7 @@ STARTED_AT = datetime.now(timezone.utc)
 
 async def handle_status(client: Client, message: Message):
     async with SessionLocal() as session:
-        gifts = await GiftsCRUD.get_all(session)
-        total_gifts = len(gifts)
+        total_gifts = await GiftsCRUD.count(session)
 
     start_time = time.time()
     await client.invoke(Ping(ping_id=0))

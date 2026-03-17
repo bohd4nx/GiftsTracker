@@ -19,6 +19,7 @@ async def run_gift_monitor(app: Client, bot) -> None:
       3. If anything changed, persists the updated history back to DB.
     """
     cycle_count = 0
+    last_hash = 0
 
     while True:
         try:
@@ -31,7 +32,10 @@ async def run_gift_monitor(app: Client, bot) -> None:
                     gift.id: GiftsCRUD.gifts_to_dict(gift) for gift in gifts
                 }
 
-                if await process_gifts(app, bot, gifts_history):
+                has_changes, last_hash = await process_gifts(
+                    app, bot, gifts_history, last_hash
+                )
+                if has_changes:
                     await GiftsCRUD.save_batch(session, list(gifts_history.values()))
 
             await asyncio.sleep(config.INTERVAL)

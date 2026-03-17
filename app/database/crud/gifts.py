@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,6 +23,11 @@ class GiftsCRUD:
     async def get_all(session: AsyncSession) -> list[Gifts]:
         result = await session.execute(select(Gifts))
         return list(result.scalars())
+
+    @staticmethod
+    async def count(session: AsyncSession) -> int:
+        result = await session.execute(select(func.count()).select_from(Gifts))
+        return result.scalar_one()
 
     @staticmethod
     async def get_by_msg_id(

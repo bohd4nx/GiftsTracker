@@ -7,24 +7,35 @@ from pyrogram.file_id import FileId, FileType
 logger = logging.getLogger(__name__)
 
 
-async def fetch_gifts(app: Client) -> tuple[int, dict[int, dict]]:
-    """Fetches all star gifts from Telegram and returns (hash, {gift_id: gift_data})."""
-    try:
-        star_gifts = await app.invoke(raw.functions.payments.GetStarGifts(hash=0))
-        hash_value = getattr(star_gifts, "hash", 0)
+async def fetch_gifts(
+    app: Client, last_hash: int = 0
+) -> tuple[int, dict[int, dict] | None]:
+    """Fetches star gifts from Telegram.
 
+    Passes `last_hash` so Telegram can return `StarGiftsNotModified` when nothing
+    has changed, avoiding full list processing on every cycle.
+
+    Returns:
+        (new_hash, gifts_dict) — on change; gifts_dict maps gift_id → gift_data.
+        (last_hash, None)      — when Telegram signals no changes.
+    """
+    try:
+        result = await app.invoke(raw.functions.payments.GetStarGifts(hash=last_hash))
+
+        # Telegram returns StarGiftsNotModified when the list hasn't changed.
+        if isinstance(result, raw.types.payments.StarGiftsNotModified):
+            logger.debug("No changes in gift list since last check")
+            return last_hash, None
+
+        hash_value = result.hash
         gifts_dict = {
             gift.id: _extract_gift_data(gift)
-            for gift in star_gifts.gifts  # type: ignore[arg-type]
+            for gift in result.gifts  # type: ignore[arg-type]
         }
-
-        if gifts_dict:
-            return hash_value, gifts_dict
-
-        return 0, {}
+        return hash_value, gifts_dict or None
     except Exception:
         logger.exception("Failed to fetch gifts from Telegram API")
-        return 0, {}
+        return last_hash, None
 
 
 def _encode_sticker(sticker, gift_id: int) -> tuple[str | None, dict | None]:
