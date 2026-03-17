@@ -6,7 +6,7 @@ from pyrogram.errors import FloodWait
 from app.core import config
 from .gifts import create_gift_message_text
 from .upgrades import create_upgrade_message_text
-from app.utils import get_released_peer, create_link_preview
+from app.utils import create_link_preview, get_released_peer
 
 logger = logging.getLogger(__name__)
 

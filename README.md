@@ -16,7 +16,8 @@
 - 🎁 **New Gifts Detection** - Automatically detects and announces new gifts in the Telegram store
 - ⬆️ **Upgrade Monitoring** - Tracks when gifts become upgradeable and price changes
 - 💎 **Sticker Management** - Downloads and uploads gift stickers to a dedicated channel
-- 📊 **SQLite Database** - Stores gift history with async SQLAlchemy ORM
+- 🖼️ **Custom Emoji Pack** - Automatically builds and maintains a Telegram custom emoji pack from all gift stickers
+- 🗄️ **SQLite Database** - Stores gift history with async SQLAlchemy ORM
 
 ## 🚀 Quick Start
 
@@ -55,6 +56,10 @@ STICKERS_CHANNEL_USERNAME=YourStickersChannel
 
 # Settings
 INTERVAL=45
+
+# Emoji pack
+EMOJI_PACK_SHORT_NAME=GiftsTrackerGifts
+EMOJI_PACK_TITLE=Gifts by @GiftsTracker
 ```
 
 ### 3. Getting Required Data
@@ -112,12 +117,21 @@ INTERVAL=45
 
 #### ⚙️ Monitoring Interval
 
-`INTERVAL` - Time in seconds between gift API checks (default: `45`)
+`INTERVAL` - Time in seconds between gift API checks (default: `15`)
 
-- Minimum recommended: `30` seconds
+- Minimum recommended: `10` seconds
 - Adjust based on your needs (lower = faster detection, higher = less API calls)
 
 **Start from scratch**: The bot will create `Gifts.db` automatically on first run.
+
+### 4. Emoji Pack Setup
+
+The bot automatically creates and manages a custom Telegram emoji pack from all gift stickers.
+
+- The pack name is controlled by `EMOJI_PACK_SHORT_NAME` and `EMOJI_PACK_TITLE` in `.env`
+- After pack creation each new gift's sticker is added automatically
+- Notifications use the gift's custom emoji as the title icon when available
+
 
 ### 5. Run the Bot
 
@@ -128,10 +142,10 @@ python main.py
 **Expected output**:
 
 ```
-[08.02.26 22:20:57] - INFO: Database initialized
-[08.02.26 22:20:59] - INFO: Logged in as @your_username [123456789]
-[08.02.26 22:20:59] - INFO: Starting gift check cycle #1
-[08.02.26 22:21:00] - INFO: Found 0 new gifts to process
+[17.03.26 22:09:50] - INFO: Database initialized
+[17.03.26 22:09:52] - INFO: Logged in as @your_username [123456789]
+[17.03.26 22:09:52] - INFO: Emoji pack ready: 155 stickers in 'GiftsTrackerGifts'
+[17.03.26 22:09:52] - INFO: Starting gift check cycle #1
 ```
 
 ### Features Explained
@@ -141,9 +155,10 @@ python main.py
 When a new gift appears:
 
 1. Bot fetches gift data from Telegram API
-2. Downloads and uploads sticker to technical channel
-3. Sends formatted notification to main channel
-4. Saves gift to database
+2. In parallel: uploads sticker to technical channel + adds sticker to emoji pack
+3. Waits 3 seconds for Telegram to index the sticker post
+4. Sends formatted notification to main channel (with the gift's custom emoji if available)
+5. Saves gift to database
 
 #### Upgrade Monitoring
 
@@ -158,6 +173,15 @@ When upgrade price changes:
 1. Detects price difference in `upgrade_price`
 2. Edits existing upgrade message with new price
 3. Updates database record
+
+#### Status Command
+
+Send `.status` (or `/status`) in any chat where the userbot is active to get a status report:
+
+- Datacenter and ping
+- Uptime
+- Check interval
+- Total gifts in DB
 
 ## 🤝 Contributing
 
@@ -178,7 +202,5 @@ This project is provided as-is for educational purposes.
 ### Made with ❤️ by [@bohd4nx](https://t.me/bohd4nx)
 
 **Star ⭐ this repo if you found it useful!**
-
-[Donate TON](https://app.tonkeeper.com/transfer/UQCppfw5DxWgdVHf3zkmZS8k1mt9oAUYxQLwq2fz3nhO8No5)
 
 </div>

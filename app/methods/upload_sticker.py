@@ -23,7 +23,8 @@ async def upload_sticker(app, bot, gift_data: dict) -> int | None:
         # Sometimes the downloaded media is not sent as a sticker by Telegram
         # (e.g. empty buffer or invalid format for .tgs).
         if not sticker_bytes or sticker_bytes.getbuffer().nbytes == 0:
-            raise Exception(f"Downloaded file is empty for gift {gift_data['id']}")
+            logger.error(f"Downloaded file is empty for gift {gift_data['id']}")
+            return None
 
         sticker = BufferedInputFile(
             file=sticker_bytes.getvalue(), filename="AnimatedSticker.tgs"
@@ -35,4 +36,5 @@ async def upload_sticker(app, bot, gift_data: dict) -> int | None:
 
         return message.message_id
     except Exception as e:
-        raise Exception(f"Upload error for gift {gift_data['id']}: {e}")
+        logger.error(f"Upload error for gift {gift_data['id']}: {e}")
+        return None
