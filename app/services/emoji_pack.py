@@ -84,10 +84,11 @@ async def build_emoji_pack(app: Client, short_name: str, title: str) -> None:
         logger.error("No .tgs stickers found — cannot build emoji pack")
         return
 
+    user_peer = await app.resolve_peer(me.id)
     first, *rest = gifts_sorted
 
     stickerset_ref, first_emoji_id = await create_sticker_set(
-        app, await me.id(app), title, short_name, make_sticker_item(first.sticker)
+        app, user_peer, title, short_name, make_sticker_item(first.sticker)
     )
     _pack.ref = stickerset_ref
 

@@ -93,6 +93,7 @@ class GiftsCRUD:
             | {
                 "sticker_raw": stmt.excluded.sticker_raw,
                 "raw_data": stmt.excluded.raw_data,
+                "last_updated": func.now(),
             },
         )
         await session.execute(stmt)
