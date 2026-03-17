@@ -17,6 +17,7 @@ class GiftsCRUD:
         "sticker_msg_id",
         "msg_id",
         "upgrade_msg_id",
+        "emoji_id",
     )
 
     @staticmethod
@@ -48,6 +49,17 @@ class GiftsCRUD:
         )
         row = result.scalar_one_or_none()
         return row, True
+
+    @staticmethod
+    async def update_emoji_id(
+        session: AsyncSession, gift_id: int, emoji_id: int
+    ) -> None:
+        """Sets emoji_id for a single gift by its primary key."""
+        result = await session.execute(select(Gifts).where(Gifts.id == gift_id))
+        row = result.scalar_one_or_none()
+        if row is not None:
+            row.emoji_id = emoji_id
+            await session.commit()
 
     @staticmethod
     async def save_batch(session: AsyncSession, gifts: list[dict | GiftsDTO]) -> None:

@@ -31,5 +31,12 @@ class Config:
 
         self.INTERVAL: float = float(os.getenv("INTERVAL", "15.0"))
 
+        self.EMOJI_PACK_SHORT_NAME: str = os.getenv(
+            "EMOJI_PACK_SHORT_NAME", "GiftsTrackerPack"
+        )
+        self.EMOJI_PACK_TITLE: str = os.getenv(
+            "EMOJI_PACK_TITLE", "Gifts by @GiftsTracker"
+        )
+
 
 config = Config()

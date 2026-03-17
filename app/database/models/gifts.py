@@ -18,6 +18,7 @@ class Gifts(Base):
     sticker_msg_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     msg_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     upgrade_msg_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    emoji_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     raw_data: Mapped[str | None] = mapped_column(Text, nullable=True)  # JSON as TEXT
     first_seen: Mapped[datetime] = mapped_column(DateTime, default=func.now())
     last_updated: Mapped[datetime] = mapped_column(

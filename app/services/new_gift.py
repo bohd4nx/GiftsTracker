@@ -5,7 +5,8 @@ from pyrogram import Client
 
 from app.methods import fetch_gifts, upload_sticker
 from app.notifications import send_notification
-from app.services.changes import preserve_message_ids, check_gift_changes
+from .gift_changes import preserve_message_ids, check_gift_changes
+from .emoji_pack import add_gift_to_pack
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +59,10 @@ async def _process_new_gifts(
         logger.info(f"Processing gift {idx}/{len(new_gifts_list)}: {gift['id']}")
 
         try:
-            sticker_msg_id = await upload_sticker(app, bot, gift)
+            sticker_msg_id, emoji_id = await asyncio.gather(
+                upload_sticker(app, bot, gift),
+                add_gift_to_pack(app, gift),
+            )
             if not sticker_msg_id:
                 raise Exception(f"Failed to upload sticker for gift {gift['id']}")
 
@@ -74,13 +78,19 @@ async def _process_new_gifts(
                     "sticker_msg_id": sticker_msg_id,
                     "msg_id": msg_id,
                     "upgrade_msg_id": None,
+                    "emoji_id": emoji_id,
                 }
             )
             logger.info(f"Successfully processed gift {gift['id']}")
         except Exception as e:
             logger.error(f"Failed to process gift {gift['id']}: {e}")
             gift.update(
-                {"sticker_msg_id": None, "msg_id": None, "upgrade_msg_id": None}
+                {
+                    "sticker_msg_id": None,
+                    "msg_id": None,
+                    "upgrade_msg_id": None,
+                    "emoji_id": None,
+                }
             )
 
         gifts_history[gift["id"]] = gift

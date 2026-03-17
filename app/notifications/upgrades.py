@@ -1,5 +1,5 @@
 from app.core.constants import EMOJIS, FOOTER
-from app.utils import format_number
+from app.utils import format_number, gift_emoji
 
 e = EMOJIS
 
@@ -8,7 +8,7 @@ def create_upgrade_message_text(gift_data: dict, username: str | None = None) ->
     gift_id = gift_data.get("id")
 
     lines = [
-        f"{e['title_upgrade']} <b>Gift upgrade available</b>\n",
+        f"{gift_emoji(gift_data, 'title_upgrade')} <b>Gift upgrade available</b>\n",
         f"{e['gift_id']} <b>ID:</b> <code>{gift_id}</code>",
     ]
 

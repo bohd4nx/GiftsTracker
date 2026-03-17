@@ -12,6 +12,7 @@ class GiftsDTO:
     sticker_msg_id: int | None = None
     msg_id: int | None = None
     upgrade_msg_id: int | None = None
+    emoji_id: int | None = None
     sticker_raw: dict | None = None
     raw: dict | None = None
 
@@ -26,6 +27,7 @@ class GiftsDTO:
             sticker_msg_id=data.get("sticker_msg_id"),
             msg_id=data.get("msg_id"),
             upgrade_msg_id=data.get("upgrade_msg_id"),
+            emoji_id=data.get("emoji_id"),
             sticker_raw=data.get("sticker_raw"),
             raw=data.get("raw"),
         )

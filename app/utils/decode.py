@@ -20,11 +20,19 @@ def _restore_bytes(obj):
         return {k: _restore_bytes(v) for k, v in obj.items()}
     if isinstance(obj, list):
         return [_restore_bytes(item) for item in obj]
-    if isinstance(obj, str) and obj.startswith("b'") and obj.endswith("'"):
+    if (
+        isinstance(obj, str)
+        and len(obj) >= 3
+        and obj.startswith("b")
+        and obj[1] in ("'", '"')
+    ):
         try:
-            return ast.literal_eval(obj)
+            result = ast.literal_eval(obj)
+            if isinstance(result, bytes):
+                return result
         except Exception:
-            return obj
+            pass
+        return obj
     return obj
 
 

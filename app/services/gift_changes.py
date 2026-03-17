@@ -1,10 +1,10 @@
 from pyrogram import Client
 
-from .upgrades import notify_upgrade_available, notify_upgrade_changed
+from .gift_upgrades import notify_upgrade_available, notify_upgrade_changed
 
 
 def preserve_message_ids(old_gift: dict, new_gift: dict) -> None:
-    for key in ["msg_id", "sticker_msg_id", "upgrade_msg_id"]:
+    for key in ["msg_id", "sticker_msg_id", "upgrade_msg_id", "emoji_id"]:
         if key in old_gift:
             new_gift[key] = old_gift[key]
 

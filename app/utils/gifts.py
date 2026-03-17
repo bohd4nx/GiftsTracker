@@ -1,6 +1,15 @@
 from pyrogram.types import LinkPreviewOptions
 
 from app.core import config
+from app.core.constants import EMOJIS
+
+
+def gift_emoji(gift_data: dict, fallback_key: str) -> str:
+    """Returns a custom emoji tag using the stored emoji_id, or the fallback from EMOJIS."""
+    emoji_id = gift_data.get("emoji_id")
+    if emoji_id:
+        return f'<emoji id="{emoji_id}">🎁</emoji>'
+    return EMOJIS[fallback_key]
 
 
 def create_link_preview(

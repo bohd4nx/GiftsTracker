@@ -6,7 +6,8 @@ from pyrogram.errors import FloodWait
 
 from app.core import config
 from app.database import SessionLocal, GiftsCRUD
-from app.services.gifts import process_gifts
+from .emoji_pack import init_pack
+from .new_gift import process_gifts
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,8 @@ async def run_gift_monitor(app: Client, bot) -> None:
     """
     cycle_count = 0
     last_hash = 0
+
+    await init_pack(app)
 
     while True:
         try:

@@ -1,5 +1,5 @@
-from .json_codec import serialize_json, deserialize_json
-from .telegram import create_link_preview, get_released_peer
+from .decode import serialize_json, deserialize_json
+from .gifts import create_link_preview, get_released_peer, gift_emoji
 from .text import format_number, format_uptime
 
 __all__ = [
@@ -9,4 +9,5 @@ __all__ = [
     "create_link_preview",
     "get_released_peer",
     "format_uptime",
+    "gift_emoji",
 ]
