@@ -1,4 +1,7 @@
 import logging
+from pathlib import Path
+
+LOG_FILE = Path(__file__).resolve().parents[2] / "Userbot.log"
 
 
 def setup_logging() -> None:
@@ -10,7 +13,7 @@ def setup_logging() -> None:
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(formatter)
 
-    file_handler = logging.FileHandler("Userbot.log", mode="w", encoding="utf-8")
+    file_handler = logging.FileHandler(LOG_FILE, mode="a", encoding="utf-8")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
     logging.basicConfig(
