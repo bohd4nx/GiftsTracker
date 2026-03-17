@@ -38,15 +38,14 @@ async def main() -> None:
         skip_updates=True,
         workers=8,
         sleep_threshold=30,
-        max_concurrent_transmissions=10
+        max_concurrent_transmissions=10,
     )
 
     bot = Bot(
         token=config.BOT_TOKEN,
         default=DefaultBotProperties(
-            parse_mode=ParseMode.HTML,
-            link_preview_is_disabled=True
-        )
+            parse_mode=ParseMode.HTML, link_preview_is_disabled=True
+        ),
     )
 
     async with client as app:
@@ -65,10 +64,14 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except (AuthKeyUnregistered, AuthKeyDuplicated, SessionRevoked):
-        logger.error("Authorization error: Session expired or invalid. Please re-authenticate.")
+        logger.error(
+            "Authorization error: Session expired or invalid. Please re-authenticate."
+        )
     except sqlite3.OperationalError as ex:
         if "database is locked" in str(ex).lower():
-            logger.error("Authorization error: Session expired or invalid. Please re-authenticate.")
+            logger.error(
+                "Authorization error: Session expired or invalid. Please re-authenticate."
+            )
         else:
             logger.exception(f"Unexpected session error: {ex}")
     except (KeyboardInterrupt, SystemExit):

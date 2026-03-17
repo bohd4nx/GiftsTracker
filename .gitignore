@@ -39,7 +39,7 @@ ENV/
 # Configuration
 .env
 .env.local
-config.ini
+.env.*
 
 # IDE & Editors
 .vscode/
@@ -61,7 +61,4 @@ Thumbs.db
 unknown_errors.txt
 
 # Project Specific
-history.json
-history.json.backup
-migrate_json_to_db.py
-update_messages.py
+tests/ 

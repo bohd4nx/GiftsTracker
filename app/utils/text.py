@@ -9,14 +9,18 @@ def format_number(number: int) -> str:
 
 def format_uptime(delta: timedelta) -> str:
     total_seconds = int(delta.total_seconds())
-    days, remainder = divmod(total_seconds, 86400)
-    hours, remainder = divmod(remainder, 3600)
-    minutes, _ = divmod(remainder, 60)
 
-    parts: list[str] = []
-    if days:
-        parts.append(f"{days}d")
-    if days or hours:
-        parts.append(f"{hours}h")
-    parts.append(f"{minutes}m")
-    return ", ".join(parts)
+    days, rem = divmod(total_seconds, 86400)
+    hours, rem = divmod(rem, 3600)
+    minutes, _ = divmod(rem, 60)
+
+    return " ".join(
+        part
+        for value, suffix in (
+            (days, "d"),
+            (hours, "h"),
+            (minutes, "m"),
+        )
+        if value or suffix == "m"
+        for part in [f"{value}{suffix}"]
+    )

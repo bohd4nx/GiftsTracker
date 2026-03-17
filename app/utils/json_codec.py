@@ -1,38 +1,42 @@
+import ast
 import json
 
 
+def _convert_bytes(obj):
+    """Recursively converts bytes values to their repr string for JSON serialization."""
+    if isinstance(obj, dict):
+        return {k: _convert_bytes(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_convert_bytes(item) for item in obj]
+    if isinstance(obj, bytes):
+        # Store as repr(b'...') so it can be safely round-tripped back via ast.literal_eval.
+        return repr(obj)
+    return obj
+
+
+def _restore_bytes(obj):
+    """Recursively restores repr strings back to bytes after JSON deserialization."""
+    if isinstance(obj, dict):
+        return {k: _restore_bytes(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_restore_bytes(item) for item in obj]
+    if isinstance(obj, str) and obj.startswith("b'") and obj.endswith("'"):
+        try:
+            return ast.literal_eval(obj)
+        except Exception:
+            return obj
+    return obj
+
+
 def serialize_json(data: dict | None) -> str | None:
+    """Serializes a dict to a JSON string, converting any bytes values to repr strings."""
     if not data:
         return None
-
-    def convert_bytes(obj):
-        if isinstance(obj, dict):
-            return {k: convert_bytes(v) for k, v in obj.items()}
-        elif isinstance(obj, list):
-            return [convert_bytes(item) for item in obj]
-        elif isinstance(obj, bytes):
-            return repr(obj)
-        return obj
-
-    return json.dumps(convert_bytes(data), ensure_ascii=False)
+    return json.dumps(_convert_bytes(data), ensure_ascii=False)
 
 
 def deserialize_json(data_str: str | None) -> dict:
+    """Deserializes a JSON string back to a dict, restoring repr strings to bytes."""
     if not data_str:
         return {}
-
-    parsed = json.loads(data_str)
-
-    def restore_bytes(obj):
-        if isinstance(obj, dict):
-            return {k: restore_bytes(v) for k, v in obj.items()}
-        elif isinstance(obj, list):
-            return [restore_bytes(item) for item in obj]
-        elif isinstance(obj, str) and obj.startswith("b'") and obj.endswith("'"):
-            try:
-                return eval(obj)
-            except:
-                return obj
-        return obj
-
-    return restore_bytes(parsed)
+    return _restore_bytes(json.loads(data_str))

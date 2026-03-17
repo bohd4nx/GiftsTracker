@@ -5,15 +5,17 @@ from pyrogram import Client
 
 from app.methods import fetch_gifts, upload_sticker
 from app.notifications import send_notification
-from app.services.changes import (
-    preserve_message_ids,
-    check_gift_changes
-)
+from app.services.changes import preserve_message_ids, check_gift_changes
 
 logger = logging.getLogger(__name__)
 
 
 async def process_gifts(app: Client, bot, gifts_history: dict[int, dict]) -> bool:
+    """
+    Compares current Telegram gift list against the local history.
+    Processes new gifts (uploads sticker, sends notification) and checks
+    existing ones for upgrade/price changes. Returns True if anything changed.
+    """
     _, current_gifts = await fetch_gifts(app)
     if not current_gifts:
         return False
@@ -41,7 +43,10 @@ async def process_gifts(app: Client, bot, gifts_history: dict[int, dict]) -> boo
     return has_changes
 
 
-async def _process_new_gifts(app: Client, bot, new_gifts: dict[int, dict], gifts_history: dict[int, dict]) -> None:
+async def _process_new_gifts(
+    app: Client, bot, new_gifts: dict[int, dict], gifts_history: dict[int, dict]
+) -> None:
+    """Uploads the sticker and sends a notification for each newly discovered gift."""
     new_gifts_list = list(new_gifts.values())
 
     for idx, gift in enumerate(new_gifts_list, 1):
@@ -52,12 +57,26 @@ async def _process_new_gifts(app: Client, bot, new_gifts: dict[int, dict], gifts
             if not sticker_msg_id:
                 raise Exception(f"Failed to upload sticker for gift {gift['id']}")
 
-            msg_id = await send_notification(app, gift, sticker_msg_id, is_upgrade=False)
-            gift.update({"sticker_msg_id": sticker_msg_id, "msg_id": msg_id, "upgrade_msg_id": None})
+            # Wait for Telegram to index the sticker post before referencing it
+            # in the link preview, otherwise WebpageNotFound is raised.
+            await asyncio.sleep(3)
+
+            msg_id = await send_notification(
+                app, gift, sticker_msg_id, is_upgrade=False
+            )
+            gift.update(
+                {
+                    "sticker_msg_id": sticker_msg_id,
+                    "msg_id": msg_id,
+                    "upgrade_msg_id": None,
+                }
+            )
             logger.info(f"Successfully processed gift {gift['id']}")
         except Exception as e:
             logger.error(f"Failed to process gift {gift['id']}: {e}")
-            gift.update({"sticker_msg_id": None, "msg_id": None, "upgrade_msg_id": None})
+            gift.update(
+                {"sticker_msg_id": None, "msg_id": None, "upgrade_msg_id": None}
+            )
 
         gifts_history[gift["id"]] = gift
 

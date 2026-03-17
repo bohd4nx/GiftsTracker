@@ -6,10 +6,7 @@ from sqlalchemy.orm import DeclarativeBase
 
 DB_FILE = Path(__file__).parents[2] / "Gifts.db"
 
-engine = create_async_engine(
-    f"sqlite+aiosqlite:///{DB_FILE}",
-    echo=False
-)
+engine = create_async_engine(f"sqlite+aiosqlite:///{DB_FILE}", echo=False)
 
 SessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
