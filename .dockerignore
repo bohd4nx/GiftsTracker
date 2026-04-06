@@ -1,17 +1,32 @@
+# Configuration
 .env
 .env.*
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
+
+# Database & Session
 *.db
 *.db-*
 *.sqlite
 *.sqlite3
 *.session
 *.session-*
+
+# Persistent data volume
 data/
+
+# Version Control
 .git/
+
+# Virtual Environment
 .venv/
 venv/
+
+# Tests
 tests/
+
+# Logs
 *.log

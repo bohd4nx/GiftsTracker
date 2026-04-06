@@ -28,4 +28,7 @@ FOOTER = (
     " • "
     '<emoji id="5418239967052724167">🏪</emoji> '
     '<a href="https://t.me/tonnel_network_bot/gifts?startapp=ref_5616264938">Tonnel</a>'
+    " • "
+    '<emoji id="5409324297846026427">🗑️</emoji> '
+    '<a href="https://t.me/RemovedGiftsBot">Removed Gifts</a>'
 )

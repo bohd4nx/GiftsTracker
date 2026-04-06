@@ -4,18 +4,19 @@ from datetime import datetime, timezone
 from pyrogram import Client
 from pyrogram.raw.functions import Ping
 from pyrogram.types import Message
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import config
 from app.core.constants import STATUS_EMOJIS
-from app.database import SessionLocal, GiftsCRUD
+from app.database import GiftsCRUD, with_session
 from app.utils import format_uptime
 
 STARTED_AT = datetime.now(timezone.utc)
 
 
-async def handle_status(client: Client, message: Message):
-    async with SessionLocal() as session:
-        total_gifts = await GiftsCRUD.count(session)
+@with_session
+async def handle_status(client: Client, message: Message, session: AsyncSession):
+    total_gifts = await GiftsCRUD.count(session)
 
     start_time = time.time()
     await client.invoke(Ping(ping_id=0))

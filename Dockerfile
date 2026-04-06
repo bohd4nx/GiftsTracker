@@ -7,7 +7,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Persistent data: SQLite DB + Pyrogram session
+# /app/data — persistent volume for SQLite DB + Pyrogram session
+# Mount with: -v /path/on/host/data:/app/data
 VOLUME ["/app/data"]
 
 CMD ["python", "main.py"]

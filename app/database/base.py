@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy import event
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
 DB_FILE = Path(__file__).resolve().parents[2] / "data" / "Gifts.db"
@@ -16,12 +16,18 @@ class Base(DeclarativeBase):
     pass
 
 
+@event.listens_for(engine.sync_engine, "connect")
+def _set_sqlite_pragma(dbapi_conn: object, _connection_record: object) -> None:
+    cursor = dbapi_conn.cursor()  # type: ignore[attr-defined]
+    cursor.execute("PRAGMA journal_mode=WAL")
+    cursor.execute("PRAGMA busy_timeout=60000")
+    cursor.execute("PRAGMA synchronous=NORMAL")
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
+
 async def init_db() -> None:
-    async with engine.begin() as conn:  # type: ignore [sqlalchemy.ext.asyncio.AsyncConnection]
-        await conn.execute(text("PRAGMA journal_mode=WAL"))
-        await conn.execute(text("PRAGMA busy_timeout=60000"))
-        await conn.execute(text("PRAGMA synchronous=NORMAL"))
-        await conn.execute(text("PRAGMA foreign_keys=ON"))
+    async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 

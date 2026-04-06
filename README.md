@@ -1,197 +1,119 @@
 <div align="center">
-  <h1>🎁 Telegram Gifts Tracker</h1>
 
-  <p style="font-size: 18px; margin-bottom: 24px;">
-    <b>Automated monitoring and notifications for new Telegram gifts and upgrades</b>
+  <h1>Telegram Gifts Tracker</h1>
+
+  <p>
+    <b>Userbot that monitors new Telegram gifts and upgrade events, sends notifications and maintains a custom emoji pack.</b>
   </p>
 
-[Report Bug](https://github.com/bohd4nx) · [Request Feature](https://github.com/bohd4nx) · [**Donate TON**](https://app.tonkeeper.com/transfer/UQCppfw5DxWgdVHf3zkmZS8k1mt9oAUYxQLwq2fz3nhO8No5)
+[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
+[![Telegram](https://img.shields.io/badge/Subscribe-@GiftsTracker-2CA5E0?style=flat&logo=telegram&logoColor=white)](https://t.me/GiftsTracker)
+
+[Report Bug](https://github.com/bohd4nx/GiftsTracker/issues) · [Request Feature](https://github.com/bohd4nx/GiftsTracker/issues) · [**Donate TON**](https://app.tonkeeper.com/transfer/UQCppfw5DxWgdVHf3zkmZS8k1mt9oAUYxQLwq2fz3nhO8No5)
 
 </div>
 
 ---
 
-## ✨ Features
+## Features
 
-- 🎁 **New Gifts Detection** - Automatically detects and announces new gifts in the Telegram store
-- ⬆️ **Upgrade Monitoring** - Tracks when gifts become upgradeable and price changes
-- 💎 **Sticker Management** - Downloads and uploads gift stickers to a dedicated channel
-- 🖼️ **Custom Emoji Pack** - Automatically builds and maintains a Telegram custom emoji pack from all gift stickers
-- 🗄️ **SQLite Database** - Stores gift history with async SQLAlchemy ORM
+- Detects new gifts in the Telegram store and sends notifications
+- Monitors when gifts become upgradeable and tracks upgrade price changes
+- Downloads gift stickers and uploads them to a dedicated channel for link previews
+- Automatically builds and maintains a custom Telegram emoji pack from all gift stickers
+- Stores full gift history in SQLite via async SQLAlchemy
 
-## 🚀 Quick Start
+---
 
-### 1. Installation
+## Installation
 
 ```bash
 git clone https://github.com/bohd4nx/GiftsTracker.git
 cd GiftsTracker
 pip install -r requirements.txt
-```
-
-### 2. Configuration
-
-Copy example configuration and edit:
-
-```bash
 cp .env.example .env
 ```
 
-Edit `.env` file:
-
-```env
-# Telegram API credentials
-API_ID=your_api_id
-API_HASH=your_api_hash
-PHONE_NUMBER=+1234567890
-PASSWORD=your_2fa_password
-
-# Bot token
-BOT_TOKEN=123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
-
-# Channels
-CHANNEL_ID=-1001234567890
-STICKERS_CHANNEL_ID=-1001234567890
-STICKERS_CHANNEL_USERNAME=YourStickersChannel
-
-# Settings
-INTERVAL=45
-
-# Emoji pack
-EMOJI_PACK_SHORT_NAME=GiftsTrackerGifts
-EMOJI_PACK_TITLE=Gifts by @GiftsTracker
-```
-
-### 3. Getting Required Data
-
-#### 🔑 Telegram API Credentials
-
-1. **Get API_ID and API_HASH**:
-   - Visit [my.telegram.org/apps](https://my.telegram.org/apps)
-   - Login with your phone number
-   - Create a new application
-   - Copy **API ID** → paste to `API_ID` in `.env`
-   - Copy **API Hash** → paste to `API_HASH` in `.env`
-
-2. **Phone Number & 2FA Password**:
-   - `PHONE_NUMBER`: Your Telegram phone number in international format (e.g., `+1234567890`)
-   - `PASSWORD`: Your Two-Factor Authentication password (leave empty if not enabled)
-
-#### 🤖 Bot Token
-
-1. **Create New Bot**:
-   - Open Telegram and find [@BotFather](https://t.me/BotFather)
-   - Send `/newbot` command
-   - Follow instructions to create your bot
-   - Copy the token → paste to `BOT_TOKEN` in `.env`
-
-#### 📢 Notification Channel
-
-1. **Create Public Channel**:
-   - Create a new Telegram channel for gift notifications
-   - Make it public (you can make it private later)
-   - Add your bot as administrator with "Post Messages" permission
-
-2. **Get Channel ID**:
-   - Forward any message from channel to [@userinfobot](https://t.me/userinfobot)
-   - Copy the **Chat ID** (format: `-100xxxxxxxxxx`)
-   - Paste to `CHANNEL_ID` in `.env`
-
-#### 🖼️ Stickers Channel
-
-1. **Create Technical Channel**:
-   - Create another channel for storing gift stickers
-   - Set a unique username (e.g., `GiftsStickersCache`)
-   - Add your bot as administrator
-
-2. **Configure in .env**:
-   - Get channel ID same way as notification channel
-   - Paste ID to `STICKERS_CHANNEL_ID`
-   - Paste username (without @) to `STICKERS_CHANNEL_USERNAME`
-
-**Why separate channels?**
-
-- Stickers channel acts as a CDN for gift animations
-- Keeps notification channel clean
-- Allows link previews with gift animations
-
-#### ⚙️ Monitoring Interval
-
-`INTERVAL` - Time in seconds between gift API checks (default: `15`)
-
-- Minimum recommended: `10` seconds
-- Adjust based on your needs (lower = faster detection, higher = less API calls)
-
-**Start from scratch**: The bot will create `Gifts.db` automatically on first run.
-
-### 4. Emoji Pack Setup
-
-The bot automatically creates and manages a custom Telegram emoji pack from all gift stickers.
-
-- The pack name is controlled by `EMOJI_PACK_SHORT_NAME` and `EMOJI_PACK_TITLE` in `.env`
-- After pack creation each new gift's sticker is added automatically
-- Notifications use the gift's custom emoji as the title icon when available
-
-
-### 5. Run the Bot
+Edit `.env` with your credentials (see [Configuration](#configuration) below), then run:
 
 ```bash
 python main.py
 ```
 
-**Expected output**:
+---
 
+## Configuration
+
+| Variable                    | Description                                                                 |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `API_ID`                    | Telegram API ID from [my.telegram.org/apps](https://my.telegram.org/apps)   |
+| `API_HASH`                  | Telegram API Hash from [my.telegram.org/apps](https://my.telegram.org/apps) |
+| `PHONE_NUMBER`              | Your phone number in international format (`+1234567890`)                   |
+| `PASSWORD`                  | 2FA password (leave empty if not enabled)                                   |
+| `BOT_TOKEN`                 | Bot token from [@BotFather](https://t.me/BotFather)                         |
+| `CHANNEL_ID`                | Notification channel ID (format: `-100xxxxxxxxxx`)                          |
+| `STICKERS_CHANNEL_ID`       | Stickers channel ID — used to host gift sticker files                       |
+| `STICKERS_CHANNEL_USERNAME` | Stickers channel username without `@`                                       |
+| `INTERVAL`                  | Polling interval in seconds (default: `15`, minimum: `10`)                  |
+| `EMOJI_PACK_SHORT_NAME`     | Short name for the custom emoji pack                                        |
+| `EMOJI_PACK_TITLE`          | Display title for the emoji pack                                            |
+
+**Stickers channel** acts as a CDN for gift animations — the bot uploads each sticker there and uses it as a link preview source in notifications. Keep it separate from the main channel.
+
+To get a channel ID: forward any message from the channel to [@userinfobot](https://t.me/userinfobot) and copy the Chat ID.
+
+---
+
+## How It Works
+
+**New gift:** fetches gift data -> uploads sticker to stickers channel -> adds sticker to emoji pack -> sends notification with link preview.
+
+**Upgrade available:** detects `upgrade_price` appearing on a previously tracked gift → sends upgrade notification → stores message ID for future edits.
+
+**Upgrade price changed:** detects price difference → edits existing upgrade notification → updates DB record.
+
+**Status command:** send `.status` in any chat where the userbot is active to see datacenter, ping, uptime, interval, and total gifts in DB.
+
+---
+
+## Docker
+
+**First run** must be interactive for Pyrogram to prompt the Telegram login code:
+
+```bash
+docker build -t giftsTracker .
+mkdir -p ~/giftsTracker/data
+
+docker run -it --rm \
+  --env-file .env \
+  -v ~/giftsTracker/data:/app/data \
+  giftsTracker
 ```
-[17.03.26 22:09:50] - INFO: Database initialized
-[17.03.26 22:09:52] - INFO: Logged in as @your_username [123456789]
-[17.03.26 22:09:52] - INFO: Emoji pack ready: 155 stickers in 'GiftsTrackerGifts'
-[17.03.26 22:09:52] - INFO: Starting gift check cycle #1
+
+After successful login, session is saved to `~/giftsTracker/data/GiftsTracker.session`. Press Ctrl+C.
+
+**Production:**
+
+```bash
+docker run -d --name giftsTracker \
+  --env-file .env \
+  --restart unless-stopped \
+  -v ~/giftsTracker/data:/app/data \
+  giftsTracker
 ```
 
-### Features Explained
+```bash
+docker logs -f giftsTracker                                          # live logs
+docker restart giftsTracker                                          # restart
+docker stop giftsTracker && docker rm giftsTracker                   # stop & remove
+docker build -t giftsTracker . && docker restart giftsTracker        # rebuild & restart
+```
 
-#### New Gift Detection
+> `/app/data` holds the SQLite database and Pyrogram session. Always mount it as a volume — data is lost if the container is removed without it.
 
-When a new gift appears:
+---
 
-1. Bot fetches gift data from Telegram API
-2. In parallel: uploads sticker to technical channel + adds sticker to emoji pack
-3. Waits 3 seconds for Telegram to index the sticker post
-4. Sends formatted notification to main channel (with the gift's custom emoji if available)
-5. Saves gift to database
-
-#### Upgrade Monitoring
-
-When upgrade becomes available:
-
-1. Detects `upgrade_price` field change from `None` to value
-2. Sends new notification about upgrade availability
-3. Stores upgrade message ID for future edits
-
-When upgrade price changes:
-
-1. Detects price difference in `upgrade_price`
-2. Edits existing upgrade message with new price
-3. Updates database record
-
-#### Status Command
-
-Send `.status` (or `/status`) in any chat where the userbot is active to get a status report:
-
-- Datacenter and ping
-- Uptime
-- Check interval
-- Total gifts in DB
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-
-- Report bugs
-- Suggest new features
-- Submit pull requests
-
-## 📜 License
+## License
 
 This project is provided as-is for educational purposes.
 
@@ -204,3 +126,4 @@ This project is provided as-is for educational purposes.
 **Star ⭐ this repo if you found it useful!**
 
 </div>
+
