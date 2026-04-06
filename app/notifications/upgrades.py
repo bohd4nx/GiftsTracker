@@ -15,7 +15,7 @@ def create_upgrade_message_text(gift_data: dict, username: str | None = None) ->
     if username:
         lines.append(f"{e['released_by']} <b>Released by:</b> @{username}")
 
-    upgrade_price = format_number(gift_data.get("upgrade_price"))
+    upgrade_price = format_number(gift_data.get("upgrade_price") or 0)
     lines.append(
         f"{e['upgrade_price']} <b>Upgrade Price:</b> "
         f"<code>{upgrade_price}</code> {e['stars']}"

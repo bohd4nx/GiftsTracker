@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-LOG_FILE = Path(__file__).resolve().parents[2] / "Userbot.log"
+LOG_FILE = Path(__file__).resolve().parents[2] / "app.log"
 
 
 def setup_logging() -> None:

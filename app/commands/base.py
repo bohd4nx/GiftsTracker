@@ -15,6 +15,6 @@ async def handle_commands(client: Client, message: Message):
         await handle_status(client, message)
 
 
-handle_commands.handlers = [
+handle_commands.handlers = [  # type: ignore[attr-defined]
     (MessageHandler(handle_commands, filters.text & filters.me), 0)
 ]

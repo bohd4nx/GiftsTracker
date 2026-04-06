@@ -30,7 +30,7 @@ async def main() -> None:
         app_version="Telegram Desktop 6.5 arm64",
         lang_pack="tdesktop",
         lang_code="en",
-        workdir=str(Path(__file__).parent),
+        workdir=str(Path(__file__).resolve().parent / "data"),
         client_platform=enums.ClientPlatform.DESKTOP,
         plugins=dict(root="app.commands"),
         parse_mode=enums.ParseMode.HTML,

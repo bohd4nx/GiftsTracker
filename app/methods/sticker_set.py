@@ -41,8 +41,8 @@ async def create_sticker_set(
 
     Returns (InputStickerSetID, first_emoji_id).
     """
-    result = await app.invoke(
-        raw.functions.stickers.CreateStickerSet(
+    result: raw.types.messages.StickerSet = await app.invoke(  # type: ignore[assignment]
+        raw.functions.stickers.CreateStickerSet(  # type: ignore[arg-type]
             user_id=user_peer,
             title=title,
             short_name=short_name,
@@ -63,8 +63,8 @@ async def add_sticker_to_set(
     stickerset_ref,
     item: raw.types.InputStickerSetItem,
 ) -> raw.types.messages.StickerSet:
-    return await app.invoke(
-        raw.functions.stickers.AddStickerToSet(
+    return await app.invoke(  # type: ignore[return-value]
+        raw.functions.stickers.AddStickerToSet(  # type: ignore[arg-type]
             stickerset=stickerset_ref,
             sticker=item,
         )
@@ -72,8 +72,8 @@ async def add_sticker_to_set(
 
 
 async def get_sticker_set(app: Client, stickerset_ref) -> raw.types.messages.StickerSet:
-    return await app.invoke(
-        raw.functions.messages.GetStickerSet(
+    return await app.invoke(  # type: ignore[return-value]
+        raw.functions.messages.GetStickerSet(  # type: ignore[arg-type]
             stickerset=stickerset_ref,
             hash=0,
         )

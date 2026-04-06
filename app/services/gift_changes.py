@@ -22,7 +22,7 @@ def detect_upgrade_price_change(old_gift: dict, new_gift: dict) -> bool:
         old_upgrade is not None
         and new_upgrade is not None
         and old_upgrade != new_upgrade
-        and old_gift.get("upgrade_msg_id")
+        and bool(old_gift.get("upgrade_msg_id"))
     )
 
 

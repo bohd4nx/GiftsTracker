@@ -16,11 +16,11 @@ from app.methods import (
 logger = logging.getLogger(__name__)
 
 
-class _PackState:
+class PackState:
     ref: raw.types.InputStickerSetID | None = None
 
 
-_pack = _PackState()
+pack = PackState()
 
 
 async def init_pack(app: Client) -> None:
@@ -30,7 +30,7 @@ async def init_pack(app: Client) -> None:
             app,
             raw.types.InputStickerSetShortName(short_name=config.EMOJI_PACK_SHORT_NAME),
         )
-        _pack.ref = raw.types.InputStickerSetID(
+        pack.ref = raw.types.InputStickerSetID(
             id=stickerset.set.id,
             access_hash=stickerset.set.access_hash,
         )
@@ -46,12 +46,12 @@ async def init_pack(app: Client) -> None:
 
 async def add_gift_to_pack(app: Client, gift_data: dict) -> int | None:
     """Adds a gift sticker to the emoji pack. Returns emoji_id or None."""
-    if _pack.ref is None or not gift_data.get("sticker_raw"):
+    if pack.ref is None or not gift_data.get("sticker_raw"):
         return None
 
     try:
         result = await add_sticker_to_set(
-            app, _pack.ref, make_sticker_item(gift_data["sticker_raw"])
+            app, pack.ref, make_sticker_item(gift_data["sticker_raw"])
         )
         emoji_id = result.documents[-1].id
         await asyncio.sleep(1.5)
@@ -70,13 +70,16 @@ async def add_gift_to_pack(app: Client, gift_data: dict) -> int | None:
 async def build_emoji_pack(app: Client, short_name: str, title: str) -> None:
     """Builds the emoji pack from all .tgs gifts. Saves emoji_id to DB for each."""
     me = await app.get_me()
-    star_gifts = await app.invoke(raw.functions.payments.GetStarGifts(hash=0))
+    star_gifts: raw.types.payments.StarGifts = await app.invoke(  # type: ignore[assignment]
+        raw.functions.payments.GetStarGifts(hash=0)  # type: ignore[arg-type]
+    )
     gifts_sorted = sorted(
         (
             g
             for g in star_gifts.gifts
             if getattr(g, "sticker", None)
-            and getattr(g.sticker, "mime_type", "") == "application/x-tgsticker"
+            and getattr(getattr(g, "sticker", None), "mime_type", "")
+            == "application/x-tgsticker"
         ),
         key=lambda g: getattr(g, "last_sale_date", 0) or 0,
     )
@@ -88,9 +91,9 @@ async def build_emoji_pack(app: Client, short_name: str, title: str) -> None:
     first, *rest = gifts_sorted
 
     stickerset_ref, first_emoji_id = await create_sticker_set(
-        app, user_peer, title, short_name, make_sticker_item(first.sticker)
+        app, user_peer, title, short_name, make_sticker_item(getattr(first, "sticker"))
     )
-    _pack.ref = stickerset_ref
+    pack.ref = stickerset_ref
 
     async with SessionLocal() as session:
         await GiftsCRUD.update_emoji_id(session, first.id, first_emoji_id)
@@ -99,7 +102,7 @@ async def build_emoji_pack(app: Client, short_name: str, title: str) -> None:
     for gift in rest:
         try:
             result = await add_sticker_to_set(
-                app, stickerset_ref, make_sticker_item(gift.sticker)
+                app, stickerset_ref, make_sticker_item(getattr(gift, "sticker"))
             )
             emoji_id = result.documents[-1].id
             await asyncio.sleep(1.5)

@@ -1,0 +1,17 @@
+.env
+.env.*
+__pycache__/
+*.pyc
+*.pyo
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.session
+*.session-*
+data/
+.git/
+.venv/
+venv/
+tests/
+*.log

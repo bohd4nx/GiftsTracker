@@ -4,7 +4,8 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 
-DB_FILE = Path(__file__).parents[2] / "Gifts.db"
+DB_FILE = Path(__file__).resolve().parents[2] / "data" / "Gifts.db"
+DB_FILE.parent.mkdir(exist_ok=True)
 
 engine = create_async_engine(f"sqlite+aiosqlite:///{DB_FILE}", echo=False)
 
