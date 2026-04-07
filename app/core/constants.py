@@ -1,7 +1,5 @@
 # Emoji shortcodes used in notification messages
 EMOJIS = {
-    "title_new_gift": '<emoji id="5411480216809792207">🎁</emoji>',
-    "title_upgrade": '<emoji id="5424894868554018540">⬆️</emoji>',
     "released_by": '<emoji id="5409129417999936997">✅</emoji>',
     "price": '<emoji id="5409181322679706928">ℹ️</emoji>',
     "upgrade_price": '<emoji id="5409128576186347318">💰</emoji>',

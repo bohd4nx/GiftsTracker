@@ -108,6 +108,7 @@ def _extract_gift_data(gift) -> dict[str, Any]:
         "upgrade_msg_id": None,
         "raw": {
             "_": "StarGift",
+            "title": getattr(gift, "title", None),
             "require_premium": getattr(gift, "require_premium", False),
             "limited_per_user": getattr(gift, "limited_per_user", False),
             "per_user_total": getattr(gift, "per_user_total", None),
@@ -116,5 +117,7 @@ def _extract_gift_data(gift) -> dict[str, Any]:
             "auction": getattr(gift, "auction", False),
             "auction_slug": getattr(gift, "auction_slug", None),
             "gifts_per_round": getattr(gift, "gifts_per_round", None),
+            "upgrade_variants": getattr(gift, "upgrade_variants", None),
+            "models_count": None,
         },
     }

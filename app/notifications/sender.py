@@ -4,6 +4,7 @@ import logging
 from pyrogram.errors import FloodWait
 
 from app.core import config
+from .crafts import create_craft_message_text
 from .gifts import create_gift_message_text
 from .upgrades import create_upgrade_message_text
 from app.utils import create_link_preview, get_released_peer
@@ -31,16 +32,22 @@ async def _send_or_edit(
 
 
 async def _compose_message(
-    app, gift_data: dict, sticker_message_id: int, is_upgrade: bool
+    app,
+    gift_data: dict,
+    sticker_message_id: int,
+    is_upgrade: bool,
+    is_craft: bool = False,
+    craft_delta: int | None = None,
 ) -> tuple[str, object]:
     """Resolves peer username, builds link preview and message text."""
     username = await get_released_peer(app, gift_data)
     link_preview = create_link_preview(gift_data, sticker_message_id)
-    text = (
-        create_upgrade_message_text(gift_data, username)
-        if is_upgrade
-        else create_gift_message_text(gift_data, username)
-    )
+    if is_craft:
+        text = create_craft_message_text(gift_data, craft_delta or 0, username)
+    elif is_upgrade:
+        text = create_upgrade_message_text(gift_data, username)
+    else:
+        text = create_gift_message_text(gift_data, username)
     return text, link_preview
 
 
@@ -49,10 +56,17 @@ async def send_notification(
     gift_data: dict,
     sticker_message_id: int,
     is_upgrade: bool = False,
+    is_craft: bool = False,
+    craft_delta: int | None = None,
 ) -> int | None:
     try:
         text, link_preview = await _compose_message(
-            app, gift_data, sticker_message_id, is_upgrade
+            app,
+            gift_data,
+            sticker_message_id,
+            is_upgrade,
+            is_craft=is_craft,
+            craft_delta=craft_delta,
         )
         return await _send_or_edit(app, text, link_preview)
     except FloodWait as e:
@@ -60,7 +74,14 @@ async def send_notification(
             f"Flood wait triggered, sleeping for {e.value}s on gift {gift_data['id']}"
         )
         await asyncio.sleep(e.value)
-        return await send_notification(app, gift_data, sticker_message_id, is_upgrade)
+        return await send_notification(
+            app,
+            gift_data,
+            sticker_message_id,
+            is_upgrade,
+            is_craft=is_craft,
+            craft_delta=craft_delta,
+        )
     except Exception as e:
         logger.exception(f"Failed to send notification for gift {gift_data['id']}: {e}")
         return None

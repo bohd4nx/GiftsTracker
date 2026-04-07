@@ -9,7 +9,7 @@ def create_gift_message_text(gift_data: dict, username: str | None = None) -> st
     gift_id = gift_data.get("id")
 
     lines = [
-        f"{gift_emoji(gift_data, 'title_new_gift')} <b>New gift available</b>\n",
+        f"{gift_emoji(gift_data)} <b>New gift available</b>\n",
         f"{e['gift_id']} <b>ID:</b> <code>{gift_id}</code>",
     ]
 

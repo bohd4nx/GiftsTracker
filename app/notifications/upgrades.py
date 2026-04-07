@@ -8,7 +8,7 @@ def create_upgrade_message_text(gift_data: dict, username: str | None = None) ->
     gift_id = gift_data.get("id")
 
     lines = [
-        f"{gift_emoji(gift_data, 'title_upgrade')} <b>Gift upgrade available</b>\n",
+        f"{gift_emoji(gift_data)} <b>Gift upgrade available</b>\n",
         f"{e['gift_id']} <b>ID:</b> <code>{gift_id}</code>",
     ]
 
