@@ -1,7 +1,6 @@
 import functools
-from collections.abc import Callable, Awaitable
+from collections.abc import Awaitable, Callable
 from typing import Any
-
 
 from .base import SessionLocal
 

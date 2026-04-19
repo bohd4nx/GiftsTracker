@@ -4,9 +4,7 @@ from app.utils import gift_emoji
 e = EMOJIS
 
 
-def create_craft_message_text(
-    gift_data: dict, delta: int, username: str | None = None
-) -> str:
+def create_craft_message_text(gift_data: dict, delta: int, username: str | None = None) -> str:
     gift_id = gift_data.get("id")
 
     lines = [

@@ -7,9 +7,7 @@ from pyrogram.file_id import FileId, FileType
 logger = logging.getLogger(__name__)
 
 
-async def fetch_gifts(
-    app: Client, last_hash: int = 0
-) -> tuple[int, dict[int, dict] | None]:
+async def fetch_gifts(app: Client, last_hash: int = 0) -> tuple[int, dict[int, dict] | None]:
     """Fetches star gifts from Telegram.
 
     Passes `last_hash` so Telegram can return `StarGiftsNotModified` when nothing
@@ -91,9 +89,7 @@ def _extract_released_by(gift) -> dict | None:
 
 
 def _extract_gift_data(gift) -> dict[str, Any]:
-    sticker_file_id, sticker_raw = _encode_sticker(
-        getattr(gift, "sticker", None), gift.id
-    )
+    sticker_file_id, sticker_raw = _encode_sticker(getattr(gift, "sticker", None), gift.id)
 
     return {
         "_": "Gift",

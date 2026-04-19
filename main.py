@@ -6,11 +6,11 @@ from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from pyrogram import Client, enums
-from pyrogram.errors import AuthKeyUnregistered, AuthKeyDuplicated, SessionRevoked
+from pyrogram.errors import AuthKeyDuplicated, AuthKeyUnregistered, SessionRevoked
 from pyrogram.types import LinkPreviewOptions
 
 from app.core import config, logger, setup_logging
-from app.database import init_db, close_db
+from app.database import close_db, init_db
 from app.services import run_gift_monitor
 
 
@@ -43,9 +43,7 @@ async def main() -> None:
 
     bot = Bot(
         token=config.BOT_TOKEN,
-        default=DefaultBotProperties(
-            parse_mode=ParseMode.HTML, link_preview_is_disabled=True
-        ),
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML, link_preview_is_disabled=True),
     )
 
     async with client as app:
@@ -64,14 +62,10 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except (AuthKeyUnregistered, AuthKeyDuplicated, SessionRevoked):
-        logger.error(
-            "Authorization error: Session expired or invalid. Please re-authenticate."
-        )
+        logger.error("Authorization error: Session expired or invalid. Please re-authenticate.")
     except sqlite3.OperationalError as ex:
         if "database is locked" in str(ex).lower():
-            logger.error(
-                "Authorization error: Session expired or invalid. Please re-authenticate."
-            )
+            logger.error("Authorization error: Session expired or invalid. Please re-authenticate.")
         else:
             logger.exception(f"Unexpected session error: {ex}")
     except (KeyboardInterrupt, SystemExit):

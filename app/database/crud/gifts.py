@@ -1,10 +1,11 @@
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.utils import deserialize_json, serialize_json
+
 from ..dto import GiftsDTO
 from ..models import Gifts
-from app.utils import serialize_json, deserialize_json
 
 
 class GiftsCRUD:
@@ -31,9 +32,7 @@ class GiftsCRUD:
         return result.scalar_one()
 
     @staticmethod
-    async def get_by_msg_id(
-        session: AsyncSession, msg_id: int
-    ) -> tuple[Gifts | None, bool]:
+    async def get_by_msg_id(session: AsyncSession, msg_id: int) -> tuple[Gifts | None, bool]:
         """Finds a gift by its notification message ID.
 
         Checks msg_id first (regular gift), then upgrade_msg_id.
@@ -44,16 +43,12 @@ class GiftsCRUD:
         if row:
             return row, False
 
-        result = await session.execute(
-            select(Gifts).where(Gifts.upgrade_msg_id == msg_id)
-        )
+        result = await session.execute(select(Gifts).where(Gifts.upgrade_msg_id == msg_id))
         row = result.scalar_one_or_none()
         return row, True
 
     @staticmethod
-    async def update_emoji_id(
-        session: AsyncSession, gift_id: int, emoji_id: int
-    ) -> None:
+    async def update_emoji_id(session: AsyncSession, gift_id: int, emoji_id: int) -> None:
         """Sets emoji_id for a single gift by its primary key."""
         result = await session.execute(select(Gifts).where(Gifts.id == gift_id))
         row = result.scalar_one_or_none()
@@ -71,10 +66,7 @@ class GiftsCRUD:
         if not gifts:
             return
 
-        payloads = [
-            gift if isinstance(gift, GiftsDTO) else GiftsDTO.from_dict(gift)
-            for gift in gifts
-        ]
+        payloads = [gift if isinstance(gift, GiftsDTO) else GiftsDTO.from_dict(gift) for gift in gifts]
 
         rows = [
             {
@@ -106,9 +98,7 @@ class GiftsCRUD:
             "_": "Gift",
             "id": gift.id,
             **{field: getattr(gift, field) for field in GiftsCRUD.SYNC_FIELDS},
-            "sticker_raw": (
-                deserialize_json(gift.sticker_raw) if gift.sticker_raw else None
-            ),
+            "sticker_raw": (deserialize_json(gift.sticker_raw) if gift.sticker_raw else None),
             "raw": deserialize_json(gift.raw_data),
         }
 

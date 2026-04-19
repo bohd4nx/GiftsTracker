@@ -21,14 +21,10 @@ async def notify_craft_models_changed(app, gift_data: dict) -> None:
         gift_data.setdefault("raw", {})["models_count"] = new_count
 
         if delta <= 0:
-            logger.info(
-                f"Craft detected for gift {gift_id} but model delta={delta}, skipping notify"
-            )
+            logger.info(f"Craft detected for gift {gift_id} but model delta={delta}, skipping notify")
             return
 
-        await send_notification(
-            app, gift_data, sticker_msg_id, is_craft=True, craft_delta=delta
-        )
+        await send_notification(app, gift_data, sticker_msg_id, is_craft=True, craft_delta=delta)
         logger.info(f"Sent craft notification for gift {gift_id}, models delta={delta}")
     except Exception:
         logger.exception(f"Failed to send craft notification for gift {gift_id}")

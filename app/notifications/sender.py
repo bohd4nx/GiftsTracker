@@ -4,17 +4,16 @@ import logging
 from pyrogram.errors import FloodWait
 
 from app.core import config
+from app.utils import create_link_preview, get_released_peer
+
 from .crafts import create_craft_message_text
 from .gifts import create_gift_message_text
 from .upgrades import create_upgrade_message_text
-from app.utils import create_link_preview, get_released_peer
 
 logger = logging.getLogger(__name__)
 
 
-async def _send_or_edit(
-    app, text: str, link_preview, message_id: int | None = None
-) -> int:
+async def _send_or_edit(app, text: str, link_preview, message_id: int | None = None) -> int:
     """Sends a new message or edits an existing one in the notification channel."""
     if message_id:
         await app.edit_message_text(
@@ -25,9 +24,7 @@ async def _send_or_edit(
         )
         return message_id
 
-    message = await app.send_message(
-        chat_id=config.CHANNEL_ID, text=text, link_preview_options=link_preview
-    )
+    message = await app.send_message(chat_id=config.CHANNEL_ID, text=text, link_preview_options=link_preview)
     return message.id
 
 
@@ -70,9 +67,7 @@ async def send_notification(
         )
         return await _send_or_edit(app, text, link_preview)
     except FloodWait as e:
-        logger.warning(
-            f"Flood wait triggered, sleeping for {e.value}s on gift {gift_data['id']}"
-        )
+        logger.warning(f"Flood wait triggered, sleeping for {e.value}s on gift {gift_data['id']}")
         await asyncio.sleep(e.value)
         return await send_notification(
             app,
@@ -95,22 +90,14 @@ async def edit_notification(
     is_upgrade: bool = False,
 ) -> bool:
     try:
-        text, link_preview = await _compose_message(
-            app, gift_data, sticker_message_id, is_upgrade
-        )
+        text, link_preview = await _compose_message(app, gift_data, sticker_message_id, is_upgrade)
         await _send_or_edit(app, text, link_preview, message_id)
         return True
     except FloodWait as e:
-        logger.warning(
-            f"Flood wait triggered, sleeping for {e.value}s while editing gift {gift_data['id']}"
-        )
+        logger.warning(f"Flood wait triggered, sleeping for {e.value}s while editing gift {gift_data['id']}")
         await asyncio.sleep(e.value)
-        return await edit_notification(
-            app, message_id, gift_data, sticker_message_id, is_upgrade
-        )
+        return await edit_notification(app, message_id, gift_data, sticker_message_id, is_upgrade)
     except Exception as e:
         if "MESSAGE_NOT_MODIFIED" not in str(e):
-            logger.exception(
-                f"Failed to edit notification for gift {gift_data['id']}: {e}"
-            )
+            logger.exception(f"Failed to edit notification for gift {gift_data['id']}: {e}")
         return False

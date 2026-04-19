@@ -1,6 +1,6 @@
 from .crafts import create_craft_message_text
 from .gifts import create_gift_message_text
-from .sender import send_notification, edit_notification
+from .sender import edit_notification, send_notification
 from .upgrades import create_upgrade_message_text
 
 __all__ = [

@@ -5,7 +5,8 @@ from pyrogram import Client
 from pyrogram.errors import FloodWait
 
 from app.core import config
-from app.database import SessionLocal, GiftsCRUD
+from app.database import GiftsCRUD, SessionLocal
+
 from .emoji_pack import init_pack
 from .new_gift import process_gifts
 
@@ -31,13 +32,9 @@ async def run_gift_monitor(app: Client, bot) -> None:
 
             async with SessionLocal() as session:
                 gifts = await GiftsCRUD.get_all(session)
-                gifts_history = {
-                    gift.id: GiftsCRUD.gifts_to_dict(gift) for gift in gifts
-                }
+                gifts_history = {gift.id: GiftsCRUD.gifts_to_dict(gift) for gift in gifts}
 
-                has_changes, last_hash = await process_gifts(
-                    app, bot, gifts_history, last_hash
-                )
+                has_changes, last_hash = await process_gifts(app, bot, gifts_history, last_hash)
                 if has_changes:
                     await GiftsCRUD.save_batch(session, list(gifts_history.values()))
 

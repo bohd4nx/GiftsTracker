@@ -1,7 +1,7 @@
 from pyrogram import Client
 
-from .gift_upgrades import notify_upgrade_available, notify_upgrade_changed
 from .gift_crafts import notify_craft_models_changed
+from .gift_upgrades import notify_upgrade_available, notify_upgrade_changed
 
 
 def preserve_message_ids(old_gift: dict, new_gift: dict) -> None:
@@ -35,7 +35,7 @@ def detect_craft_models_change(old_gift: dict, new_gift: dict) -> int | None:
     return None
 
 
-async def check_gift_changes(app: Client, bot, old_gift: dict, new_gift: dict) -> bool:
+async def check_gift_changes(app: Client, _, old_gift: dict, new_gift: dict) -> bool:
     if detect_upgrade_availability(old_gift, new_gift):
         await notify_upgrade_available(app, new_gift)
         return True

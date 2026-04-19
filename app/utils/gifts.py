@@ -11,9 +11,7 @@ def gift_emoji(gift_data: dict) -> str:
     return "🎁"
 
 
-def create_link_preview(
-    gift_data: dict, sticker_message_id: int
-) -> LinkPreviewOptions | None:
+def create_link_preview(gift_data: dict, sticker_message_id: int) -> LinkPreviewOptions | None:
     raw_data = gift_data.get("raw", {})
     auction_slug = raw_data.get("auction_slug")
 

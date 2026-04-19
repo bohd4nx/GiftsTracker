@@ -5,15 +5,14 @@ from pyrogram import Client
 
 from app.methods import fetch_gifts, upload_sticker
 from app.notifications import send_notification
-from .gift_changes import preserve_message_ids, check_gift_changes
+
 from .emoji_pack import add_gift_to_pack
+from .gift_changes import check_gift_changes, preserve_message_ids
 
 logger = logging.getLogger(__name__)
 
 
-async def process_gifts(
-    app: Client, bot, gifts_history: dict[int, dict], last_hash: int = 0
-) -> tuple[bool, int]:
+async def process_gifts(app: Client, bot, gifts_history: dict[int, dict], last_hash: int = 0) -> tuple[bool, int]:
     """
     Compares current Telegram gift list against the local history.
     Processes new gifts (uploads sticker, sends notification) and checks
@@ -49,9 +48,7 @@ async def process_gifts(
     return has_changes, new_hash
 
 
-async def _process_new_gifts(
-    app: Client, bot, new_gifts: dict[int, dict], gifts_history: dict[int, dict]
-) -> None:
+async def _process_new_gifts(app: Client, bot, new_gifts: dict[int, dict], gifts_history: dict[int, dict]) -> None:
     """Uploads the sticker and sends a notification for each newly discovered gift."""
     new_gifts_list = list(new_gifts.values())
 
@@ -70,9 +67,7 @@ async def _process_new_gifts(
             # in the link preview, otherwise WebpageNotFound is raised.
             await asyncio.sleep(3)
 
-            msg_id = await send_notification(
-                app, gift, sticker_msg_id, is_upgrade=False
-            )
+            msg_id = await send_notification(app, gift, sticker_msg_id, is_upgrade=False)
             gift.update(
                 {
                     "sticker_msg_id": sticker_msg_id,

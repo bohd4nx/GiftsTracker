@@ -1,4 +1,4 @@
-from .base import init_db, close_db, SessionLocal
+from .base import SessionLocal, close_db, init_db
 from .crud import GiftsCRUD
 from .dto import GiftsDTO
 from .middleware import with_session

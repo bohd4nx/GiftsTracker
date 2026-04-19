@@ -15,9 +15,7 @@ async def upload_sticker(app, bot, gift_data: dict) -> int | None:
         return None
 
     try:
-        sticker_bytes: BytesIO = await app.download_media(
-            sticker_file_id, in_memory=True
-        )
+        sticker_bytes: BytesIO = await app.download_media(sticker_file_id, in_memory=True)
 
         # TODO: Fix cases when Telegram returns an empty or unrecognized file.
         # Sometimes the downloaded media is not sent as a sticker by Telegram
@@ -26,13 +24,9 @@ async def upload_sticker(app, bot, gift_data: dict) -> int | None:
             logger.error(f"Downloaded file is empty for gift {gift_data['id']}")
             return None
 
-        sticker = BufferedInputFile(
-            file=sticker_bytes.getvalue(), filename="AnimatedSticker.tgs"
-        )
+        sticker = BufferedInputFile(file=sticker_bytes.getvalue(), filename="AnimatedSticker.tgs")
 
-        message = await bot.send_sticker(
-            chat_id=config.STICKERS_CHANNEL_ID, sticker=sticker
-        )
+        message = await bot.send_sticker(chat_id=config.STICKERS_CHANNEL_ID, sticker=sticker)
 
         return message.message_id
     except Exception as e:

@@ -26,10 +26,7 @@ def create_gift_message_text(gift_data: dict, username: str | None = None) -> st
 
     if raw_data.get("auction") and (gifts_per_round := raw_data.get("gifts_per_round")):
         rounds = (gift_data.get("total_amount") or 0) // gifts_per_round
-        lines.append(
-            f"{e['auction_rounds']} <b>{rounds}</b> rounds • "
-            f"<b>{gifts_per_round}</b> per round"
-        )
+        lines.append(f"{e['auction_rounds']} <b>{rounds}</b> rounds • <b>{gifts_per_round}</b> per round")
 
     limits = []
 
