@@ -7,7 +7,7 @@ from pyrogram.file_id import FileId, FileType
 logger = logging.getLogger(__name__)
 
 
-async def fetch_gifts(app: Client, last_hash: int = 0) -> tuple[int, dict[int, dict] | None]:
+async def fetch_gifts(app: Client, last_hash: int = 0) -> tuple[int, dict[int, dict[str, Any]] | None]:
     """Fetches star gifts from Telegram.
 
     Passes `last_hash` so Telegram can return `StarGiftsNotModified` when nothing
@@ -26,17 +26,14 @@ async def fetch_gifts(app: Client, last_hash: int = 0) -> tuple[int, dict[int, d
             return last_hash, None
 
         hash_value = result.hash
-        gifts_dict = {
-            gift.id: _extract_gift_data(gift)
-            for gift in result.gifts  # type: ignore[arg-type]
-        }
+        gifts_dict = {gift.id: _extract_gift_data(gift) for gift in result.gifts}
         return hash_value, gifts_dict or None
     except Exception:
         logger.exception("Failed to fetch gifts from Telegram API")
         return last_hash, None
 
 
-def _encode_sticker(sticker, gift_id: int) -> tuple[str | None, dict | None]:
+def _encode_sticker(sticker: Any, gift_id: int) -> tuple[str | None, dict[str, Any] | None]:
     """
     Builds a Pyrogram-compatible file_id string and a raw metadata dict from a
     bare MTProto sticker object.
@@ -77,7 +74,7 @@ def _encode_sticker(sticker, gift_id: int) -> tuple[str | None, dict | None]:
         return None, sticker_raw
 
 
-def _extract_released_by(gift) -> dict | None:
+def _extract_released_by(gift: Any) -> dict[str, Any] | None:
     """Returns a normalized peer dict for the gift's releasing channel, or None."""
     peer = getattr(gift, "released_by", None)
     if not peer:
@@ -88,7 +85,7 @@ def _extract_released_by(gift) -> dict | None:
     }
 
 
-def _extract_gift_data(gift) -> dict[str, Any]:
+def _extract_gift_data(gift: Any) -> dict[str, Any]:
     sticker_file_id, sticker_raw = _encode_sticker(getattr(gift, "sticker", None), gift.id)
 
     return {

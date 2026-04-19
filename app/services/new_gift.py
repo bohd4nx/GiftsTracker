@@ -1,6 +1,8 @@
 import asyncio
 import logging
+from typing import Any
 
+from aiogram import Bot
 from pyrogram import Client
 
 from app.methods import fetch_gifts, upload_sticker
@@ -12,7 +14,9 @@ from .gift_changes import check_gift_changes, preserve_message_ids
 logger = logging.getLogger(__name__)
 
 
-async def process_gifts(app: Client, bot, gifts_history: dict[int, dict], last_hash: int = 0) -> tuple[bool, int]:
+async def process_gifts(
+    app: Client, bot: Bot, gifts_history: dict[int, dict[str, Any]], last_hash: int = 0
+) -> tuple[bool, int]:
     """
     Compares current Telegram gift list against the local history.
     Processes new gifts (uploads sticker, sends notification) and checks
@@ -48,7 +52,9 @@ async def process_gifts(app: Client, bot, gifts_history: dict[int, dict], last_h
     return has_changes, new_hash
 
 
-async def _process_new_gifts(app: Client, bot, new_gifts: dict[int, dict], gifts_history: dict[int, dict]) -> None:
+async def _process_new_gifts(
+    app: Client, bot: Bot, new_gifts: dict[int, dict[str, Any]], gifts_history: dict[int, dict[str, Any]]
+) -> None:
     """Uploads the sticker and sends a notification for each newly discovered gift."""
     new_gifts_list = list(new_gifts.values())
 

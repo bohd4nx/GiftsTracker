@@ -13,8 +13,8 @@ class GiftsDTO:
     msg_id: int | None = None
     upgrade_msg_id: int | None = None
     emoji_id: int | None = None
-    sticker_raw: dict | None = None
-    raw: dict | None = None
+    sticker_raw: dict[str, Any] | None = None
+    raw: dict[str, Any] | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "GiftsDTO":

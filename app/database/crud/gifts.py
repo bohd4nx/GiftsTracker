@@ -1,3 +1,5 @@
+from typing import Any
+
 from sqlalchemy import func, select
 from sqlalchemy.dialects.sqlite import insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -57,7 +59,7 @@ class GiftsCRUD:
             await session.commit()
 
     @staticmethod
-    async def save_batch(session: AsyncSession, gifts: list[dict | GiftsDTO]) -> None:
+    async def save_batch(session: AsyncSession, gifts: list[dict[str, Any] | GiftsDTO]) -> None:
         """
         Upserts a batch of gifts in a single query.
         On conflict (same id) all SYNC_FIELDS and JSON blobs are overwritten;
@@ -92,7 +94,7 @@ class GiftsCRUD:
         await session.commit()
 
     @staticmethod
-    def gifts_to_dict(gift: Gifts) -> dict:
+    def gifts_to_dict(gift: Gifts) -> dict[str, Any]:
         """Converts an ORM Gifts row back to the in-memory dict format used by services."""
         data = {
             "_": "Gift",

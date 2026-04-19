@@ -1,7 +1,10 @@
 import asyncio
 import logging
+from typing import Any
 
+from pyrogram import Client
 from pyrogram.errors import FloodWait
+from pyrogram.types import LinkPreviewOptions
 
 from app.core import config
 from app.utils import create_link_preview, get_released_peer
@@ -13,14 +16,14 @@ from .upgrades import create_upgrade_message_text
 logger = logging.getLogger(__name__)
 
 
-async def _send_or_edit(app, text: str, link_preview, message_id: int | None = None) -> int:
+async def _send_or_edit(app: Client, text: str, link_preview: LinkPreviewOptions | None, message_id: int | None = None) -> int:
     """Sends a new message or edits an existing one in the notification channel."""
     if message_id:
         await app.edit_message_text(
             chat_id=config.CHANNEL_ID,
             message_id=message_id,
             text=text,
-            link_preview_options=link_preview,
+            link_preview_options=link_preview,  # type: ignore[arg-type]
         )
         return message_id
 
@@ -29,13 +32,13 @@ async def _send_or_edit(app, text: str, link_preview, message_id: int | None = N
 
 
 async def _compose_message(
-    app,
-    gift_data: dict,
+    app: Client,
+    gift_data: dict[str, Any],
     sticker_message_id: int,
     is_upgrade: bool,
     is_craft: bool = False,
     craft_delta: int | None = None,
-) -> tuple[str, object]:
+) -> tuple[str, LinkPreviewOptions | None]:
     """Resolves peer username, builds link preview and message text."""
     username = await get_released_peer(app, gift_data)
     link_preview = create_link_preview(gift_data, sticker_message_id)
@@ -49,8 +52,8 @@ async def _compose_message(
 
 
 async def send_notification(
-    app,
-    gift_data: dict,
+    app: Client,
+    gift_data: dict[str, Any],
     sticker_message_id: int,
     is_upgrade: bool = False,
     is_craft: bool = False,
@@ -83,9 +86,9 @@ async def send_notification(
 
 
 async def edit_notification(
-    app,
+    app: Client,
     message_id: int,
-    gift_data: dict,
+    gift_data: dict[str, Any],
     sticker_message_id: int,
     is_upgrade: bool = False,
 ) -> bool:

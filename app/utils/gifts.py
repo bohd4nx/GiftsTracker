@@ -1,9 +1,11 @@
+from typing import Any
+
 from pyrogram.types import LinkPreviewOptions
 
 from app.core import config
 
 
-def gift_emoji(gift_data: dict) -> str:
+def gift_emoji(gift_data: dict[str, Any]) -> str:
     """Returns a custom emoji tag using the stored emoji_id, or plain 🎁."""
     emoji_id = gift_data.get("emoji_id")
     if emoji_id:
@@ -11,7 +13,7 @@ def gift_emoji(gift_data: dict) -> str:
     return "🎁"
 
 
-def create_link_preview(gift_data: dict, sticker_message_id: int) -> LinkPreviewOptions | None:
+def create_link_preview(gift_data: dict[str, Any], sticker_message_id: int) -> LinkPreviewOptions | None:
     raw_data = gift_data.get("raw", {})
     auction_slug = raw_data.get("auction_slug")
 
@@ -32,7 +34,7 @@ def create_link_preview(gift_data: dict, sticker_message_id: int) -> LinkPreview
     )
 
 
-async def get_released_peer(app, gift_data: dict) -> str | None:
+async def get_released_peer(app: Any, gift_data: dict[str, Any]) -> str | None:
     raw_data = gift_data.get("raw", {})
     released_by = raw_data.get("released_by")
 
@@ -49,6 +51,6 @@ async def get_released_peer(app, gift_data: dict) -> str | None:
         # May require changes if users or groups start releasing gifts.
         chat_id = int(f"-100{peer_id}")
         chat = await app.get_chat(chat_id)
-        return chat.username
+        return chat.username  # type: ignore[no-any-return]
     except Exception:
         return None

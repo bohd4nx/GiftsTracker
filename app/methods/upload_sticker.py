@@ -1,6 +1,8 @@
 import logging
 from io import BytesIO
+from typing import Any
 
+from aiogram import Bot
 from aiogram.types import BufferedInputFile
 
 from app.core import config
@@ -8,7 +10,7 @@ from app.core import config
 logger = logging.getLogger(__name__)
 
 
-async def upload_sticker(app, bot, gift_data: dict) -> int | None:
+async def upload_sticker(app: Any, bot: Bot, gift_data: dict[str, Any]) -> int | None:
     sticker_file_id = gift_data.get("sticker_file_id")
     if not sticker_file_id:
         logger.error(f"Missing sticker_file_id for gift {gift_data['id']}")

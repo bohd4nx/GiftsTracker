@@ -15,7 +15,7 @@ STARTED_AT = datetime.now(UTC)
 
 
 @with_session
-async def handle_status(client: Client, message: Message, session: AsyncSession):
+async def handle_status(client: Client, message: Message, session: AsyncSession) -> None:
     total_gifts = await GiftsCRUD.count(session)
 
     start_time = time.time()

@@ -1,10 +1,12 @@
+from typing import Any
+
 from app.core.constants import EMOJIS, FOOTER
 from app.utils import format_number, gift_emoji
 
 e = EMOJIS
 
 
-def create_gift_message_text(gift_data: dict, username: str | None = None) -> str:
+def create_gift_message_text(gift_data: dict[str, Any], username: str | None = None) -> str:
     raw_data = gift_data.get("raw", {})
     gift_id = gift_data.get("id")
 

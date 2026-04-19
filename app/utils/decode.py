@@ -1,8 +1,9 @@
 import ast
 import json
+from typing import Any
 
 
-def _convert_bytes(obj):
+def _convert_bytes(obj: Any) -> Any:
     """Recursively converts bytes values to their repr string for JSON serialization."""
     if isinstance(obj, dict):
         return {k: _convert_bytes(v) for k, v in obj.items()}
@@ -14,7 +15,7 @@ def _convert_bytes(obj):
     return obj
 
 
-def _restore_bytes(obj):
+def _restore_bytes(obj: Any) -> Any:
     """Recursively restores repr strings back to bytes after JSON deserialization."""
     if isinstance(obj, dict):
         return {k: _restore_bytes(v) for k, v in obj.items()}
@@ -31,15 +32,15 @@ def _restore_bytes(obj):
     return obj
 
 
-def serialize_json(data: dict | None) -> str | None:
+def serialize_json(data: dict[str, Any] | None) -> str | None:
     """Serializes a dict to a JSON string, converting any bytes values to repr strings."""
     if not data:
         return None
     return json.dumps(_convert_bytes(data), ensure_ascii=False)
 
 
-def deserialize_json(data_str: str | None) -> dict:
+def deserialize_json(data_str: str | None) -> dict[str, Any]:
     """Deserializes a JSON string back to a dict, restoring repr strings to bytes."""
     if not data_str:
         return {}
-    return _restore_bytes(json.loads(data_str))
+    return _restore_bytes(json.loads(data_str))  # type: ignore[no-any-return]

@@ -5,7 +5,7 @@ from pyrogram.types import Message
 from .status import handle_status
 
 
-async def handle_commands(client: Client, message: Message):
+async def handle_commands(client: Client, message: Message) -> None:
     if not message.text:
         return
 

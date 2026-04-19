@@ -34,3 +34,8 @@ ignore = ["E501"]
 python_version = "3.12"
 strict = true
 explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["pyrogram", "pyrogram.*"]
+implicit_reexport = true
+ignore_missing_imports = true

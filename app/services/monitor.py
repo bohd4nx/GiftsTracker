@@ -1,6 +1,7 @@
 import asyncio
 import logging
 
+from aiogram import Bot
 from pyrogram import Client
 from pyrogram.errors import FloodWait
 
@@ -13,7 +14,7 @@ from .new_gift import process_gifts
 logger = logging.getLogger(__name__)
 
 
-async def run_gift_monitor(app: Client, bot) -> None:
+async def run_gift_monitor(app: Client, bot: Bot) -> None:
     """
     Main polling loop. On each cycle:
       1. Loads all gifts from DB into an in-memory history dict.

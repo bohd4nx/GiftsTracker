@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import Any
 
 from pyrogram import Client, raw
 from pyrogram.errors import FloodWait
@@ -40,7 +41,7 @@ async def init_pack(app: Client) -> None:
         await build_emoji_pack(app, config.EMOJI_PACK_SHORT_NAME, config.EMOJI_PACK_TITLE)
 
 
-async def add_gift_to_pack(app: Client, gift_data: dict) -> int | None:
+async def add_gift_to_pack(app: Client, gift_data: dict[str, Any]) -> int | None:
     """Adds a gift sticker to the emoji pack. Returns emoji_id or None."""
     if pack.ref is None or not gift_data.get("sticker_raw"):
         return None
@@ -62,9 +63,7 @@ async def add_gift_to_pack(app: Client, gift_data: dict) -> int | None:
 async def build_emoji_pack(app: Client, short_name: str, title: str) -> None:
     """Builds the emoji pack from all .tgs gifts. Saves emoji_id to DB for each."""
     me = await app.get_me()
-    star_gifts: raw.types.payments.StarGifts = await app.invoke(  # type: ignore[assignment]
-        raw.functions.payments.GetStarGifts(hash=0)  # type: ignore[arg-type]
-    )
+    star_gifts: raw.types.payments.StarGifts = await app.invoke(raw.functions.payments.GetStarGifts(hash=0))  # type: ignore[arg-type]
     gifts_sorted = sorted(
         (
             g

@@ -1,11 +1,14 @@
 import logging
+from typing import Any
+
+from pyrogram import Client
 
 from app.notifications import edit_notification, send_notification
 
 logger = logging.getLogger(__name__)
 
 
-async def notify_upgrade_available(app, gift_data: dict) -> None:
+async def notify_upgrade_available(app: Client, gift_data: dict[str, Any]) -> None:
     if not (sticker_msg_id := gift_data.get("sticker_msg_id")):
         return
 
@@ -17,7 +20,7 @@ async def notify_upgrade_available(app, gift_data: dict) -> None:
         logger.exception(f"Failed to send upgrade notification for gift {gift_data['id']}")
 
 
-async def notify_upgrade_changed(app, new_gift: dict, old_gift: dict) -> None:
+async def notify_upgrade_changed(app: Client, new_gift: dict[str, Any], old_gift: dict[str, Any]) -> None:
     sticker_msg_id = new_gift.get("sticker_msg_id")
     upgrade_msg_id = old_gift.get("upgrade_msg_id")
 

@@ -1,12 +1,15 @@
 import logging
+from typing import Any
+
+from pyrogram import Client
 
 from app.notifications.sender import send_notification
 
 logger = logging.getLogger(__name__)
 
 
-async def notify_craft_models_changed(app, gift_data: dict) -> None:
-    gift_id = gift_data.get("id")
+async def notify_craft_models_changed(app: Client, gift_data: dict[str, Any]) -> None:
+    gift_id: int = gift_data.get("id")  # type: ignore[assignment]
     sticker_msg_id = gift_data.get("sticker_msg_id")
     if not sticker_msg_id:
         logger.warning(f"No sticker_msg_id for craft notification of gift {gift_id}")
