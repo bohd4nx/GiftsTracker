@@ -66,37 +66,27 @@ python main.py
 **First run** must be interactive so Pyrogram can ask for the login code:
 
 ```bash
-docker build -t giftsTracker .
-mkdir -p ~/giftsTracker/data
-
-docker run -it --rm \
-  --env-file .env \
-  -v ~/giftsTracker/data:/app/data \
-  giftsTracker
+docker compose run --rm app
 ```
 
-After login the session is saved to `~/giftsTracker/data/`. Press `Ctrl+C` to stop.
+After login the session is saved to `./data/`. Press `Ctrl+C` to stop.
 
 **Production:**
 
 ```bash
-docker run -d --name giftsTracker \
-  --env-file .env \
-  --restart unless-stopped \
-  -v ~/giftsTracker/data:/app/data \
-  giftsTracker
+docker compose up -d
 ```
 
 Useful commands:
 
 ```bash
-docker logs -f giftsTracker                                    # live logs
-docker restart giftsTracker                                    # restart
-docker stop giftsTracker && docker rm giftsTracker             # stop & remove
-docker build -t giftsTracker . && docker restart giftsTracker  # rebuild & restart
+docker compose logs -f              # live logs
+docker compose restart              # restart
+docker compose down                 # stop & remove
+docker compose up -d --build        # rebuild & restart
 ```
 
-> Always mount `/app/data` — it holds the SQLite database and session file.
+> The `./data` directory is mounted to `/app/data` — it holds the SQLite database and session file.
 
 ---
 
