@@ -1,13 +1,14 @@
 import asyncio
 import logging
+from typing import Any
 
 from pyrogram import Client, raw
 
 logger = logging.getLogger(__name__)
 
 
-def make_sticker_item(sticker) -> raw.types.InputStickerSetItem:
-    """Creates an InputStickerSetItem from a dict or a raw Document object."""
+def make_sticker_item(sticker: Any) -> raw.types.InputStickerSetItem:
+    """Builds an InputStickerSetItem from a raw dict or a Document object."""
     if isinstance(sticker, dict):
         doc_id, access_hash, file_reference = (
             sticker["id"],
@@ -32,16 +33,13 @@ def make_sticker_item(sticker) -> raw.types.InputStickerSetItem:
 
 async def create_sticker_set(
     app: Client,
-    user_peer,
+    user_peer: Any,
     title: str,
     short_name: str,
     first_item: raw.types.InputStickerSetItem,
 ) -> tuple[raw.types.InputStickerSetID, int]:
-    """Creates a custom emoji pack with a single initial sticker.
-
-    Returns (InputStickerSetID, first_emoji_id).
-    """
-    result: raw.types.messages.StickerSet = await app.invoke(  # type: ignore[assignment]
+    """Creates a custom emoji pack with one initial sticker; returns (InputStickerSetID, first_emoji_id)."""
+    result: raw.types.messages.StickerSet = await app.invoke(
         raw.functions.stickers.CreateStickerSet(  # type: ignore[arg-type]
             user_id=user_peer,
             title=title,
@@ -60,10 +58,10 @@ async def create_sticker_set(
 
 async def add_sticker_to_set(
     app: Client,
-    stickerset_ref,
+    stickerset_ref: Any,
     item: raw.types.InputStickerSetItem,
 ) -> raw.types.messages.StickerSet:
-    return await app.invoke(  # type: ignore[return-value]
+    return await app.invoke(
         raw.functions.stickers.AddStickerToSet(  # type: ignore[arg-type]
             stickerset=stickerset_ref,
             sticker=item,
@@ -71,8 +69,8 @@ async def add_sticker_to_set(
     )
 
 
-async def get_sticker_set(app: Client, stickerset_ref) -> raw.types.messages.StickerSet:
-    return await app.invoke(  # type: ignore[return-value]
+async def get_sticker_set(app: Client, stickerset_ref: Any) -> raw.types.messages.StickerSet:
+    return await app.invoke(
         raw.functions.messages.GetStickerSet(  # type: ignore[arg-type]
             stickerset=stickerset_ref,
             hash=0,

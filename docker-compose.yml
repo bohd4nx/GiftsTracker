@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    container_name: giftsTracker
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    stdin_open: true
+    tty: true
+    restart: unless-stopped

@@ -1,9 +1,9 @@
 from .fetch_gifts import fetch_gifts
 from .sticker_set import (
-    make_sticker_item,
-    create_sticker_set,
     add_sticker_to_set,
+    create_sticker_set,
     get_sticker_set,
+    make_sticker_item,
 )
 from .upload_sticker import upload_sticker
 

@@ -1,16 +1,17 @@
 import asyncio
 import logging
+from typing import Any
 
 from pyrogram import Client, raw
 from pyrogram.errors import FloodWait
 
 from app.core import config
-from app.database import SessionLocal, GiftsCRUD
+from app.database import GiftsCRUD, SessionLocal
 from app.methods import (
-    make_sticker_item,
-    create_sticker_set,
     add_sticker_to_set,
+    create_sticker_set,
     get_sticker_set,
+    make_sticker_item,
 )
 
 logger = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ pack = PackState()
 
 
 async def init_pack(app: Client) -> None:
-    """Resolves or creates the emoji pack. Called once at bot startup."""
+    """Resolves the existing emoji pack by short name, or creates it from scratch."""
     try:
         stickerset = await get_sticker_set(
             app,
@@ -34,32 +35,24 @@ async def init_pack(app: Client) -> None:
             id=stickerset.set.id,
             access_hash=stickerset.set.access_hash,
         )
-        logger.info(
-            f"Emoji pack ready: {stickerset.set.count} stickers in '{config.EMOJI_PACK_SHORT_NAME}'"
-        )
+        logger.info(f"Emoji pack ready: {stickerset.set.count} stickers in '{config.EMOJI_PACK_SHORT_NAME}'")
     except Exception:
         logger.info("Emoji pack not found — creating...")
-        await build_emoji_pack(
-            app, config.EMOJI_PACK_SHORT_NAME, config.EMOJI_PACK_TITLE
-        )
+        await build_emoji_pack(app, config.EMOJI_PACK_SHORT_NAME, config.EMOJI_PACK_TITLE)
 
 
-async def add_gift_to_pack(app: Client, gift_data: dict) -> int | None:
-    """Adds a gift sticker to the emoji pack. Returns emoji_id or None."""
+async def add_gift_to_pack(app: Client, gift_data: dict[str, Any]) -> int | None:
+    """Adds a gift sticker to the emoji pack via MTProto and returns the new emoji_id."""
     if pack.ref is None or not gift_data.get("sticker_raw"):
         return None
 
     try:
-        result = await add_sticker_to_set(
-            app, pack.ref, make_sticker_item(gift_data["sticker_raw"])
-        )
+        result = await add_sticker_to_set(app, pack.ref, make_sticker_item(gift_data["sticker_raw"]))
         emoji_id = result.documents[-1].id
         await asyncio.sleep(1.5)
         return emoji_id
     except FloodWait as e:
-        logger.warning(
-            f"FloodWait {e.value}s — failed to add gift {gift_data['id']} to emoji pack"
-        )
+        logger.warning(f"FloodWait {e.value}s — failed to add gift {gift_data['id']} to emoji pack")
         await asyncio.sleep(e.value)
         return None
     except Exception as e:
@@ -68,18 +61,16 @@ async def add_gift_to_pack(app: Client, gift_data: dict) -> int | None:
 
 
 async def build_emoji_pack(app: Client, short_name: str, title: str) -> None:
-    """Builds the emoji pack from all .tgs gifts. Saves emoji_id to DB for each."""
+    """Creates an emoji pack from all .tgs gifts and saves each emoji_id to DB."""
     me = await app.get_me()
-    star_gifts: raw.types.payments.StarGifts = await app.invoke(  # type: ignore[assignment]
-        raw.functions.payments.GetStarGifts(hash=0)  # type: ignore[arg-type]
-    )
+    star_gifts: raw.types.payments.StarGifts = await app.invoke(raw.functions.payments.GetStarGifts(hash=0))  # type: ignore[arg-type]
+    # keep only animated (.tgs) stickers; sort by last_sale_date so the pack order is stable
     gifts_sorted = sorted(
         (
             g
             for g in star_gifts.gifts
             if getattr(g, "sticker", None)
-            and getattr(getattr(g, "sticker", None), "mime_type", "")
-            == "application/x-tgsticker"
+            and getattr(getattr(g, "sticker", None), "mime_type", "") == "application/x-tgsticker"
         ),
         key=lambda g: getattr(g, "last_sale_date", 0) or 0,
     )
@@ -88,6 +79,7 @@ async def build_emoji_pack(app: Client, short_name: str, title: str) -> None:
         return
 
     user_peer = await app.resolve_peer(me.id)
+    # create the set with the first gift; the API requires at least one sticker at creation time
     first, *rest = gifts_sorted
 
     stickerset_ref, first_emoji_id = await create_sticker_set(
@@ -101,9 +93,7 @@ async def build_emoji_pack(app: Client, short_name: str, title: str) -> None:
     added, failed = 1, 0
     for gift in rest:
         try:
-            result = await add_sticker_to_set(
-                app, stickerset_ref, make_sticker_item(getattr(gift, "sticker"))
-            )
+            result = await add_sticker_to_set(app, stickerset_ref, make_sticker_item(getattr(gift, "sticker")))
             emoji_id = result.documents[-1].id
             await asyncio.sleep(1.5)
             async with SessionLocal() as session:

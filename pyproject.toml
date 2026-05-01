@@ -1,0 +1,41 @@
+[project]
+name = "gifts-tracker"
+version = "2026.1.0"
+description = "Userbot that monitors new Telegram gifts, upgrade and craft events, sends notifications and maintains a custom emoji pack"
+requires-python = ">=3.12"
+authors = [{ name = "bohd4nx" }]
+dependencies = [
+    "kurigram @ git+https://github.com/KurimuzonAkuma/kurigram.git@dev",
+    "tgcrypto-pyrofork==1.2.8",
+    "aiogram>=3.25.0",
+    "python-dotenv>=1.1.0",
+    "sqlalchemy[asyncio]>=2.0.44",
+    "greenlet==3.3.0", 
+    "aiosqlite>=0.20.0",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "mypy"]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 128
+target-version = "py312"
+
+[tool.ruff.lint]
+# E — pycodestyle errors, F — pyflakes, W — warnings, I — isort, UP — pyupgrade
+select = ["E", "F", "W", "I", "UP"]
+# E501 — line too long (covered by line-length above)
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["pyrogram", "pyrogram.*"]
+implicit_reexport = true
+ignore_missing_imports = true
