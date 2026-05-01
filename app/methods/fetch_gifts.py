@@ -8,19 +8,11 @@ logger = logging.getLogger(__name__)
 
 
 async def fetch_gifts(app: Client, last_hash: int = 0) -> tuple[int, dict[int, dict[str, Any]] | None]:
-    """Fetches star gifts from Telegram.
-
-    Passes `last_hash` so Telegram can return `StarGiftsNotModified` when nothing
-    has changed, avoiding full list processing on every cycle.
-
-    Returns:
-        (new_hash, gifts_dict) — on change; gifts_dict maps gift_id → gift_data.
-        (last_hash, None)      — when Telegram signals no changes.
-    """
+    """Fetches star gifts from Telegram using last_hash for change detection; returns (hash, gifts_dict) or (hash, None) if unchanged."""
     try:
         result = await app.invoke(raw.functions.payments.GetStarGifts(hash=last_hash))
 
-        # Telegram returns StarGiftsNotModified when the list hasn't changed.
+        # telegram returns StarGiftsNotModified when the list hasn't changed.
         if isinstance(result, raw.types.payments.StarGiftsNotModified):
             logger.debug("No changes in gift list since last check")
             return last_hash, None
@@ -34,14 +26,7 @@ async def fetch_gifts(app: Client, last_hash: int = 0) -> tuple[int, dict[int, d
 
 
 def _encode_sticker(sticker: Any, gift_id: int) -> tuple[str | None, dict[str, Any] | None]:
-    """
-    Builds a Pyrogram-compatible file_id string and a raw metadata dict from a
-    bare MTProto sticker object.
-
-    Returns (file_id, raw_dict), or (None, None) if required fields are missing.
-    The raw_dict is stored in the DB so the sticker can be re-downloaded later
-    without a live Telegram session.
-    """
+    """Encodes a raw MTProto sticker into a Pyrogram file_id string and a serialisable raw dict."""
     if not sticker:
         return None, None
 
@@ -50,9 +35,11 @@ def _encode_sticker(sticker: Any, gift_id: int) -> tuple[str | None, dict[str, A
     access_hash = getattr(sticker, "access_hash", 0)
     file_reference = getattr(sticker, "file_reference", b"")
 
+    # all four fields are required to build a valid file_id
     if not all([dc_id, media_id, access_hash, file_reference]):
         return None, None
 
+    # raw dict is stored in DB so the sticker can be re-used without a live session
     sticker_raw = {
         "dc_id": dc_id,
         "id": media_id,
@@ -61,6 +48,7 @@ def _encode_sticker(sticker: Any, gift_id: int) -> tuple[str | None, dict[str, A
     }
 
     try:
+        # encode to a Pyrogram-compatible base64 file_id string
         sticker_file_id = FileId(
             file_type=FileType.DOCUMENT,
             dc_id=dc_id,
@@ -75,7 +63,7 @@ def _encode_sticker(sticker: Any, gift_id: int) -> tuple[str | None, dict[str, A
 
 
 def _extract_released_by(gift: Any) -> dict[str, Any] | None:
-    """Returns a normalized peer dict for the gift's releasing channel, or None."""
+    """Returns a normalised peer dict for the releasing channel/user, or None."""
     peer = getattr(gift, "released_by", None)
     if not peer:
         return None

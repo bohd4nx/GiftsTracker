@@ -8,15 +8,7 @@ from .base import SessionLocal
 def with_session(
     handler: Callable[..., Awaitable[Any]],
 ) -> Callable[..., Awaitable[Any]]:
-    """Decorator that injects an AsyncSession as the last positional argument.
-
-    Usage::
-
-        @with_session
-        async def handle_status(client, message, session: AsyncSession):
-            total = await GiftsCRUD.count(session)
-            ...
-    """
+    """Decorator that opens an AsyncSession and injects it as the last positional arg."""
 
     @functools.wraps(handler)
     async def wrapper(*args: Any, **kwargs: Any) -> Any:

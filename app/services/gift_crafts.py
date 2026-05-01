@@ -20,7 +20,7 @@ async def notify_craft_models_changed(app: Client, gift_data: dict[str, Any]) ->
         old_count = (gift_data.get("raw") or {}).get("models_count") or 0
         delta = new_count - old_count
 
-        # Persist new model count into gift_data so it's saved to DB
+        # persist new model count into gift_data so it's saved to DB
         gift_data.setdefault("raw", {})["models_count"] = new_count
 
         if delta <= 0:

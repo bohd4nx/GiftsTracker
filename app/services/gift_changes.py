@@ -38,6 +38,7 @@ def detect_craft_models_change(old_gift: dict[str, Any], new_gift: dict[str, Any
 
 
 async def check_gift_changes(app: Client, _: Any, old_gift: dict[str, Any], new_gift: dict[str, Any]) -> bool:
+    # checks are ordered by priority: upgrade first, then price edit, then new craft models
     if detect_upgrade_availability(old_gift, new_gift):
         await notify_upgrade_available(app, new_gift)
         return True

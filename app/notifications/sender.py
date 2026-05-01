@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 async def _send_or_edit(app: Client, text: str, link_preview: LinkPreviewOptions | None, message_id: int | None = None) -> int:
-    """Sends a new message or edits an existing one in the notification channel."""
+    """Sends a new channel message or edits an existing one; returns message_id."""
     if message_id:
         await app.edit_message_text(
             chat_id=config.CHANNEL_ID,
@@ -39,7 +39,7 @@ async def _compose_message(
     is_craft: bool = False,
     craft_delta: int | None = None,
 ) -> tuple[str, LinkPreviewOptions | None]:
-    """Resolves peer username, builds link preview and message text."""
+    """Builds message text and link preview for the given notification type."""
     username = await get_released_peer(app, gift_data)
     link_preview = create_link_preview(gift_data, sticker_message_id)
     if is_craft:
@@ -70,6 +70,7 @@ async def send_notification(
         )
         return await _send_or_edit(app, text, link_preview)
     except FloodWait as e:
+        # back off and retry transparently — the caller never sees FloodWait
         logger.warning(f"Flood wait triggered, sleeping for {e.value}s on gift {gift_data['id']}")
         await asyncio.sleep(e.value)
         return await send_notification(

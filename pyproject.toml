@@ -7,11 +7,11 @@ authors = [{ name = "bohd4nx" }]
 dependencies = [
     "kurigram @ git+https://github.com/KurimuzonAkuma/kurigram.git@dev",
     "tgcrypto-pyrofork==1.2.8",
-    "aiogram>=3.23.0",
+    "aiogram>=3.25.0",
     "python-dotenv>=1.1.0",
-    "SQLAlchemy[asyncio]>=2.0.45",
+    "sqlalchemy[asyncio]>=2.0.44",
     "greenlet==3.3.0", 
-    "aiosqlite>=0.22.0",
+    "aiosqlite>=0.20.0",
 ]
 
 [project.optional-dependencies]

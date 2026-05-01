@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def make_sticker_item(sticker: Any) -> raw.types.InputStickerSetItem:
-    """Creates an InputStickerSetItem from a dict or a raw Document object."""
+    """Builds an InputStickerSetItem from a raw dict or a Document object."""
     if isinstance(sticker, dict):
         doc_id, access_hash, file_reference = (
             sticker["id"],
@@ -38,10 +38,7 @@ async def create_sticker_set(
     short_name: str,
     first_item: raw.types.InputStickerSetItem,
 ) -> tuple[raw.types.InputStickerSetID, int]:
-    """Creates a custom emoji pack with a single initial sticker.
-
-    Returns (InputStickerSetID, first_emoji_id).
-    """
+    """Creates a custom emoji pack with one initial sticker; returns (InputStickerSetID, first_emoji_id)."""
     result: raw.types.messages.StickerSet = await app.invoke(
         raw.functions.stickers.CreateStickerSet(  # type: ignore[arg-type]
             user_id=user_peer,

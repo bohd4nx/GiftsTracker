@@ -46,9 +46,9 @@ async def get_released_peer(app: Any, gift_data: dict[str, Any]) -> str | None:
         return None
 
     try:
-        # NOTE: Currently gifts are released only by channels,
+        # NOTE: currently gifts are released only by channels,
         # so peer_id is converted to a channel chat_id (-100...).
-        # May require changes if users or groups start releasing gifts.
+        # may require changes if users or groups start releasing gifts.
         chat_id = int(f"-100{peer_id}")
         chat = await app.get_chat(chat_id)
         return chat.username  # type: ignore[no-any-return]

@@ -15,12 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 async def run_gift_monitor(app: Client, bot: Bot) -> None:
-    """
-    Main polling loop. On each cycle:
-      1. Loads all gifts from DB into an in-memory history dict.
-      2. Fetches the current gift list from Telegram and detects changes.
-      3. If anything changed, persists the updated history back to DB.
-    """
+    """Main polling loop: loads history from DB, fetches Telegram gifts, saves changes."""
     cycle_count = 0
     last_hash = 0
 
