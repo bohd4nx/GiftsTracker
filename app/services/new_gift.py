@@ -67,6 +67,10 @@ async def _process_new_gifts(
             if not sticker_msg_id:
                 raise Exception(f"Failed to upload sticker for gift {gift['id']}")
 
+            # set emoji_id before sending so gift_emoji() picks it up in the notification
+            gift["emoji_id"] = emoji_id
+            gift["sticker_msg_id"] = sticker_msg_id
+
             # wait for Telegram to index the sticker post before referencing it
             # in the link preview, otherwise WebpageNotFound is raised.
             await asyncio.sleep(3)
@@ -74,10 +78,8 @@ async def _process_new_gifts(
             msg_id = await send_notification(app, gift, sticker_msg_id, is_upgrade=False)
             gift.update(
                 {
-                    "sticker_msg_id": sticker_msg_id,
                     "msg_id": msg_id,
                     "upgrade_msg_id": None,
-                    "emoji_id": emoji_id,
                 }
             )
             logger.info(f"Successfully processed gift {gift['id']}")
