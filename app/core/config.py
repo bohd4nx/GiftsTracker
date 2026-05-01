@@ -12,11 +12,12 @@ class Config:
     def __init__(self) -> None:
         env_path = Path(__file__).resolve().parents[2] / ".env"
 
-        if not env_path.exists():
+        if env_path.exists():
+            load_dotenv(env_path)
+        elif not os.getenv("API_ID"):
+            # no .env file and no env vars injected (e.g. via docker-compose env_file)
             logger.error("Configuration file not found! Please create '.env'")
             sys.exit(1)
-
-        load_dotenv(env_path)
 
         self.API_ID: int = int(os.getenv("API_ID", "0"))
         self.API_HASH: str = os.getenv("API_HASH", "")

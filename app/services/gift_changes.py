@@ -2,7 +2,7 @@ from typing import Any
 
 from pyrogram import Client
 
-from .gift_crafts import notify_craft_models_changed
+# from .gift_crafts import notify_craft_models_changed
 from .gift_upgrades import notify_upgrade_available, notify_upgrade_changed
 
 
@@ -47,8 +47,8 @@ async def check_gift_changes(app: Client, _: Any, old_gift: dict[str, Any], new_
         await notify_upgrade_changed(app, new_gift, old_gift)
         return True
 
-    if detect_craft_models_change(old_gift, new_gift):
-        await notify_craft_models_changed(app, new_gift)
-        return True
+    # if detect_craft_models_change(old_gift, new_gift):
+    #     await notify_craft_models_changed(app, new_gift)
+    #     return True
 
     return False
